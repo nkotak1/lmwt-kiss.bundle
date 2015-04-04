@@ -45,6 +45,8 @@ def Section(title, type='movies'):
 	oc.add(DirectoryObject(key=Callback(Media, title='Recently Added', rel_url=rel_url % ('date')), title='Recently Added'))
 	oc.add(DirectoryObject(key=Callback(Media, title='Latest Releases', rel_url=rel_url % ('release')), title='Latest Releases'))
 
+	oc.add(InputDirectoryObject(key=Callback(Search, type=type), title='Search', prompt='Search', thumb=R('search.png')))
+
 	return oc
 
 ####################################################################################################
@@ -80,14 +82,18 @@ def Media(title, rel_url, page=1):
 				thumb = item_thumb
 			))
 
-	next_check = html.xpath('//div[@class="pagination"]/a[last()]/@href')[0].split('page=')[-1].split('&')[0]
+	next_check = html.xpath('//div[@class="pagination"]/a[last()]/@href')
 
-	if int(next_check) > page:
+	if len(next_check) > 0:
 
-		oc.add(NextPageObject(
-			key = Callback(Media, title=title, rel_url=rel_url, page=page+1),
-			title = 'More...'
-		))
+		next_check = next_check[0].split('page=')[-1].split('&')[0]
+
+		if int(next_check) > page:
+
+			oc.add(NextPageObject(
+				key = Callback(Media, title=title, rel_url=rel_url, page=page+1),
+				title = 'More...'
+			))
 
 	return oc
 
@@ -175,3 +181,14 @@ def MediaPlayback(url):
 	oc.add(URLService.MetadataObjectForURL(url))
 
 	return oc
+
+####################################################################################################
+@route('/video/lmwtkiss/media/search')
+def Search(type='movies', query=''):
+
+	if type == 'tv':
+		rel_url = 'index.php?tv=&search_keywords=%s' % (String.Quote(query, usePlus=True).lower())
+	else:
+		rel_url = 'index.php?search_keywords=%s' % (String.Quote(query, usePlus=True).lower())
+
+	return Media(title=query, rel_url=rel_url)
