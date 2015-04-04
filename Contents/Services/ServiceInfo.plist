@@ -18,6 +18,13 @@
 				<string>^http:\/\/www\.novamov\.com\/video\/[a-f0-9]+</string>
 			</array>
 		</dict>
+		<key>VeeHD</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^http:\/\/veehd\.com\/video\/\d+</string>
+			</array>
+		</dict>
 	</dict>
 </dict>
 </plist>
