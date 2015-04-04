@@ -171,7 +171,10 @@ def MediaVersions(url, title, thumb):
 				thumb = thumb
 			))
 
-	return oc
+	if len(oc) < 1:
+		return ObjectContainer(header='No Sources', message='No compatible sources found')
+	else:
+		return oc
 
 ####################################################################################################
 @route('/video/lmwtkiss/media/playback')
