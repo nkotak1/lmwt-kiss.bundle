@@ -32,6 +32,13 @@
 				<string>^http:\/\/veehd\.com\/video\/\d+</string>
 			</array>
 		</dict>
+		<key>Vidto</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^http:\/\/vidto\.me/.+</string>
+			</array>
+		</dict>
 	</dict>
 </dict>
 </plist>
