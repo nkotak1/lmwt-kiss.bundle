@@ -160,6 +160,9 @@ def MediaVersions(url, title, thumb):
 		url = ext_url.split('url=')[-1].split('&')[0]
 		url = String.Base64Decode(url)
 
+		if url.split('/')[2].replace('www.', '') in ['youtube.com']:
+			continue
+
 		if URLService.ServiceIdentifierForURL(url) is not None:
 
 			host = url.split('/')[2].replace('www.', '')
