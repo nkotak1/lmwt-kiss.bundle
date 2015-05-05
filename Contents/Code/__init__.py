@@ -129,11 +129,14 @@ def MediaEpisodes(url, title, thumb):
 
 	oc = ObjectContainer(title2=title)
 
-	Log(title.split(' ')[-1])
 	for item in html.xpath('//div[@data-id="%s"]//a[contains(@href, "/tv-")]' % (title.split(' ')[-1])):
 
+		item_title = '%s %s' % (item.xpath('.//text()')[0].strip(), item.xpath('.//text()')[1].strip())
+
+		if '0 links' in item_title.lower():
+			continue
+
 		item_url = item.xpath('./@href')[0]
-		item_title = '%s %s' % (item.xpath('.//text()')[0], item.xpath('.//text()')[1])
 
 		oc.add(DirectoryObject(
 			key = Callback(MediaVersions, url=item_url, title=item_title, thumb=thumb),
