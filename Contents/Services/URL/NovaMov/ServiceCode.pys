@@ -10,7 +10,7 @@ def MetadataObjectForURL(url):
 
 	html = HTML.ElementFromURL(url)
 
-	title = html.xpath('//meta[@property="og:title"]/@content')[0].split('Watch ')[-1].split(' online ')[0]
+	title = html.xpath('//title/text()')[0].split('Watch ')[-1].split(' online ')[0]
 	thumb = html.xpath('//meta[@property="og:image"]/@content')[0]
 
 	return VideoClipObject(
