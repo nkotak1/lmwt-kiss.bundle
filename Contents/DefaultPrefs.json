@@ -1,6 +1,6 @@
 [
 	{
-		"id": "site_url",
+		"id": "pw_site_url",
 		"type": "enum",
 		"label": "Site URL",
 		"values": [
@@ -9,7 +9,7 @@
 		"default": "https://www.primewire.ag"
 	},
 	{
-		"id": "username",
+		"id": "pw_username",
 		"type": "text",
 		"label": "Username",
 		"default": ""
