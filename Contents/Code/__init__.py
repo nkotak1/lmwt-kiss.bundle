@@ -14,10 +14,7 @@ def Start():
 ####################################################################################################
 def ValidatePrefs():
 
-	try:
-		test = HTTP.Request(Prefs['site_url'], cacheTime=0).content
-	except:
-		return ObjectContainer(header='Invalid URL', message='Please input a valid and existing URL, including http://')
+	pass
 
 ####################################################################################################
 @handler('/video/lmwtkiss', TITLE)
@@ -57,7 +54,7 @@ def Section(title, type='movies'):
 @route('/video/lmwtkiss/media', page=int)
 def Media(title, rel_url, page=1):
 
-	url = '%s/%s&page=%d' % (Prefs['site_url'].rstrip('/'), rel_url, page)
+	url = '%s/%s&page=%d' % (Prefs['site_url'], rel_url, page)
 	html = HTML.ElementFromURL(url)
 
 	oc = ObjectContainer(title2=title)
@@ -106,7 +103,7 @@ def Media(title, rel_url, page=1):
 def MediaSeasons(url, title, thumb):
 
 	if not url.startswith('http'):
-		url = '%s%s' % (Prefs['site_url'].rstrip('/'), url)
+		url = '%s%s' % (Prefs['site_url'], url)
 
 	html = HTML.ElementFromURL(url)
 
@@ -127,7 +124,7 @@ def MediaSeasons(url, title, thumb):
 def MediaEpisodes(url, title, thumb):
 
 	if not url.startswith('http'):
-		url = '%s%s' % (Prefs['site_url'].rstrip('/'), url)
+		url = '%s%s' % (Prefs['site_url'], url)
 
 	html = HTML.ElementFromURL(url)
 
@@ -155,7 +152,7 @@ def MediaEpisodes(url, title, thumb):
 def MediaVersions(url, title, thumb):
 
 	if not url.startswith('http'):
-		url = '%s%s' % (Prefs['site_url'].rstrip('/'), url)
+		url = '%s%s' % (Prefs['site_url'], url)
 
 	html = HTML.ElementFromURL(url)
 	summary = html.xpath('//meta[@name="description"]/@content')[0].split(' online - ', 1)[-1].split('. Download ')[0]
