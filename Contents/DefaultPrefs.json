@@ -1,8 +1,11 @@
 [
 	{
 		"id": "site_url",
-		"type": "text",
+		"type": "enum",
 		"label": "Site URL",
-		"default": "http://www.primewire.ag"
+		"values": [
+			"https://www.primewire.ag"
+		],
+		"default": "https://www.primewire.ag"
 	}
 ]
