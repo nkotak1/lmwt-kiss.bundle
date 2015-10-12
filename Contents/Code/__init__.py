@@ -1,7 +1,7 @@
 TITLE = 'PrimeWire'
 
 import updater
-updater.init(repo='/piplongrun/lmwt-kiss.bundle', branch='master')
+updater.init(repo='piplongrun/lmwt-kiss.bundle', branch='master')
 
 ####################################################################################################
 def Start():
