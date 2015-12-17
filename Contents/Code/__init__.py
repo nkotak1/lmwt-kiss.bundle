@@ -24,6 +24,7 @@ def MainMenu():
     oc.add(DirectoryObject(key=Callback(Section, title='TV Shows', type='tv'), title='TV Shows'))
     oc.add(DirectoryObject(key=Callback(BookmarksMain), title='My Bookmarks'))
     oc.add(PrefsObject(title='Preferences'))
+    oc.add(InputDirectoryObject(key=Callback(Search), title='Search', prompt='Search', thumb=R('icon-search.png')))
 
     return oc
 
@@ -101,8 +102,6 @@ def Section(title, type='movies'):
     oc.add(DirectoryObject(key=Callback(Media, title='Highly Rated', rel_url=rel_url % ('ratings')), title='Highly Rated'))
     oc.add(DirectoryObject(key=Callback(Media, title='Recently Added', rel_url=rel_url % ('date')), title='Recently Added'))
     oc.add(DirectoryObject(key=Callback(Media, title='Latest Releases', rel_url=rel_url % ('release')), title='Latest Releases'))
-
-    oc.add(InputDirectoryObject(key=Callback(Search, type=type), title='Search', prompt='Search', thumb=R('icon-search.png')))
 
     return oc
 
@@ -285,14 +284,21 @@ def MediaPlayback(url):
 
 ####################################################################################################
 @route(PREFIX + '/media/search')
-def Search(type='movies', query=''):
+def Search(query=''):
 
-    if type == 'tv':
-        rel_url = 'index.php?tv=&search_keywords=%s' % (String.Quote(query, usePlus=True).lower())
-    else:
-        rel_url = 'index.php?search_keywords=%s' % (String.Quote(query, usePlus=True).lower())
+    oc = ObjectContainer(title2='Search for \"%s\"' %query)
 
-    return Media(title=query, rel_url=rel_url)
+    c_list = [('Movies', 'index.php?search_keywords=%s'), ('TV Shows', 'index.php?tv=&search_keywords=%s')]
+
+    for c, url in c_list:
+        rel_url = url %(String.Quote(query, usePlus=True).lower())
+
+        oc.add(DirectoryObject(
+            key=Callback(Media, title=query, rel_url=rel_url),
+            title=c
+            ))
+
+    return oc
 
 ####################################################################################################
 @route(PREFIX + '/addbookmark')
