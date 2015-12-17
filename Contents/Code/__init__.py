@@ -112,8 +112,8 @@ def Section(title, type='movies'):
     return oc
 
 ####################################################################################################
-@route(PREFIX + '/media', page=int)
-def Media(title, rel_url, page=1):
+@route(PREFIX + '/media', page=int, search=bool)
+def Media(title, rel_url, page=1, search=False):
 
     url = '%s/%s&page=%d' % (Prefs['pw_site_url'], rel_url, page)
     html = HTML.ElementFromURL(url, cacheTime=CACHE_TIME)
@@ -150,7 +150,14 @@ def Media(title, rel_url, page=1):
                 title = 'More...'
                 ))
 
-    return oc
+    if len(oc) > 0:
+        return oc
+    elif search:
+        return MessageContainer('Search',
+            'No Search results for \"%s\"' %title)
+    else:
+        return MessageContainer('Error',
+            'No media for \"%s\"' %title)
 
 ####################################################################################################
 @route(PREFIX + '/media/subpage')
@@ -300,7 +307,7 @@ def Search(query=''):
         rel_url = url %(String.Quote(query, usePlus=True).lower())
 
         oc.add(DirectoryObject(
-            key=Callback(Media, title=query, rel_url=rel_url),
+            key=Callback(Media, title=query, rel_url=rel_url, search=True),
             title=c
             ))
 
