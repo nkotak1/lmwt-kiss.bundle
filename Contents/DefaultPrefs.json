@@ -3,9 +3,13 @@
 		"id": "pw_site_url",
 		"type": "enum",
 		"label": "Site URL",
-		"values": [
-			"http://www.primewire.ag"
-		],
-		"default": "http://www.primewire.ag"
+		"values": ["https://www.primewire.ag", "http://www.primewire.ag", "http://primewire.filespook.com"],
+		"default": "https://www.primewire.ag"
+	},
+	{
+		"id": "pw_username",
+		"type": "text",
+		"label": "Username",
+		"default": ""
 	}
 ]
