@@ -1,6 +1,5 @@
 TITLE = 'PrimeWire'
 PREFIX = '/video/lmwtkiss'
-CACHE_TIME = CACHE_1HOUR
 
 import updater
 updater.init(repo='piplongrun/lmwt-kiss.bundle', branch='master')
@@ -10,13 +9,11 @@ def Start():
 
     ObjectContainer.title1 = TITLE
     DirectoryObject.thumb = R('icon-default.jpg')
-    #HTTP.CacheTime = CACHE_1HOUR
-    HTTP.CacheTime = 0
+    HTTP.CacheTime = CACHE_1HOUR
     HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 
 ####################################################################################################
 def ValidatePrefs():
-
     pass
 
 ####################################################################################################
@@ -115,10 +112,16 @@ def Section(title, type='movies'):
 @route(PREFIX + '/media', page=int, search=bool)
 def Media(title, rel_url, page=1, search=False):
 
-    url = '%s/%s&page=%d' % (Prefs['pw_site_url'], rel_url, page)
-    html = HTML.ElementFromURL(url, cacheTime=CACHE_TIME)
+    url = Prefs['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
 
-    oc = ObjectContainer(title2=title)
+    if ((Dict['pw_site_url'] == Prefs['pw_site_url']) if Dict['pw_site_url'] else False):
+        html = HTML.ElementFromURL(url)
+    else:
+        Dict['pw_site_url'] = Prefs['pw_site_url']
+        Dict.Save()
+        html = HTML.ElementFromURL(url, cacheTime=0)
+
+    oc = ObjectContainer(title2=title, no_cache=True)
 
     for item in html.xpath('//div[@class="index_container"]//a[contains(@href, "/watch-")]'):
 
@@ -173,7 +176,7 @@ def MediaSubPage(title, thumb, url, category=None):
         url = Prefs['pw_site_url'] + url
 
     if not category:
-        html = HTML.ElementFromURL(url, cacheTime=CACHE_TIME)
+        html = HTML.ElementFromURL(url)
 
         category = 'TV Shows' if html.xpath('//div[@class="tv_container"]') else 'Movies'
 
@@ -211,7 +214,7 @@ def MediaSubPage(title, thumb, url, category=None):
 @route(PREFIX + '/media/seasons')
 def MediaSeasons(url, title, thumb):
 
-    html = HTML.ElementFromURL(url, cacheTime=CACHE_TIME)
+    html = HTML.ElementFromURL(url)
 
     oc = ObjectContainer(title2=title)
 
@@ -229,7 +232,7 @@ def MediaSeasons(url, title, thumb):
 @route(PREFIX + '/media/episodes')
 def MediaEpisodes(url, title, thumb):
 
-    html = HTML.ElementFromURL(url, cacheTime=CACHE_TIME)
+    html = HTML.ElementFromURL(url)
 
     oc = ObjectContainer(title2=title)
 
@@ -257,7 +260,7 @@ def MediaVersions(url, title, thumb):
     if not url.startswith('http'):
         url = '%s%s' % (Prefs['pw_site_url'], url)
 
-    html = HTML.ElementFromURL(url, cacheTime=CACHE_TIME)
+    html = HTML.ElementFromURL(url)
     summary = html.xpath('//meta[@name="description"]/@content')[0].split(' online - ', 1)[-1].split('. Download ')[0]
 
     oc = ObjectContainer(title2=title)
