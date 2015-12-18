@@ -64,7 +64,7 @@ def BookmarksMain():
 	if len(oc) > 0:
 		return oc
 	else:
-		return MessageContainer('Bookmarks', 'Bookmarks list Empty')
+		return MessageContainer('Bookmarks', 'Bookmark list Empty')
 
 ####################################################################################################
 @route(PREFIX + '/bookmarkssub')
@@ -86,14 +86,14 @@ def BookmarksSub(category):
 		item_id = bookmark['id']
 
 		oc.add(DirectoryObject(
-			key=Callback(MediaSubPage, title=title, category=category, thumb=thumb, url=url, item_id=item_id),
+			key=Callback(MediaSubPage, title=title, category=category, thumb=thumb, item_url=url, item_id=item_id),
 			title=title, thumb=thumb
 			))
 
 	if len(oc) > 0:
 		return oc
 	else:
-		return MessageContainer('Bookmarks', 'Bookmarks list Empty')
+		return MessageContainer('Bookmarks', '%s Bookmarks list Empty' %category)
 
 ####################################################################################################
 @route(PREFIX + '/section')
@@ -142,7 +142,7 @@ def Media(title, rel_url, page=1, search=False):
 			item_thumb = 'http://%s%s' % (url.split('/')[2], item_thumb)
 
 		oc.add(DirectoryObject(
-			key = Callback(MediaSubPage, url=item_url, title=item_title, thumb=item_thumb, item_id=item_id),
+			key = Callback(MediaSubPage, item_url=item_url, title=item_title, thumb=item_thumb, item_id=item_id),
 			title = item_title,
 			thumb = item_thumb
 			))
@@ -171,7 +171,7 @@ def Media(title, rel_url, page=1, search=False):
 
 ####################################################################################################
 @route(PREFIX + '/media/subpage')
-def MediaSubPage(title, thumb, url, item_id, category=None):
+def MediaSubPage(title, thumb, item_url, item_id, category=None):
 	"""
 	Split into MediaSeason (TV) or MediaVersion (Movie)
 	Include Bookmark option here
@@ -179,8 +179,10 @@ def MediaSubPage(title, thumb, url, item_id, category=None):
 
 	oc = ObjectContainer(title2=title, no_cache=True)
 
-	if not url.startswith('http'):
-		url = Prefs['pw_site_url'] + url
+	if not item_url.startswith('http'):
+		url = Prefs['pw_site_url'] + item_url
+	else:
+		url = item_url
 
 	if not category:
 		html = HTML.ElementFromURL(url)
@@ -211,7 +213,7 @@ def MediaSubPage(title, thumb, url, item_id, category=None):
 			))
 	else:
 		oc.add(DirectoryObject(
-			key=Callback(AddBookmark, title=title, thumb=thumb, url=url, category=category, item_id=item_id),
+			key=Callback(AddBookmark, title=title, thumb=thumb, url=item_url, category=category, item_id=item_id),
 			title='Add Bookmark',
 			summary='Add \"%s\" to your Bookmarks list.' %title,
 			thumb=R(BOOKMARK_ADD_ICON)
