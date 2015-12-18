@@ -77,11 +77,11 @@ def BookmarksSub(category):
         thumb = bookmark['thumb']
         url = bookmark['url']
         category = bookmark['category']
+        item_id = bookmark['id']
 
         oc.add(DirectoryObject(
-            key = Callback(MediaSubPage, title=title, category=category, thumb=thumb, url=url),
-            title = title,
-            thumb = thumb
+            key=Callback(MediaSubPage, title=title, category=category, thumb=thumb, url=url, item_id=item_id),
+            title=title, thumb=thumb
             ))
 
     if len(oc) > 0:
@@ -128,6 +128,7 @@ def Media(title, rel_url, page=1, search=False):
         item_url = item.xpath('./@href')[0]
         item_title = item.xpath('./h2/text()')[0]
         item_thumb = item.xpath('./img/@src')[0]
+        item_id = item_thumb.split('/')[-1].split('_')[0]
 
         if item_thumb.startswith('//'):
             item_thumb = 'http:%s' % (item_thumb)
@@ -135,7 +136,7 @@ def Media(title, rel_url, page=1, search=False):
             item_thumb = 'http://%s%s' % (url.split('/')[2], item_thumb)
 
         oc.add(DirectoryObject(
-            key = Callback(MediaSubPage, url=item_url, title=item_title, thumb=item_thumb),
+            key = Callback(MediaSubPage, url=item_url, title=item_title, thumb=item_thumb, item_id=item_id),
             title = item_title,
             thumb = item_thumb
             ))
@@ -164,7 +165,7 @@ def Media(title, rel_url, page=1, search=False):
 
 ####################################################################################################
 @route(PREFIX + '/media/subpage')
-def MediaSubPage(title, thumb, url, category=None):
+def MediaSubPage(title, thumb, url, item_id, category=None):
     """
     Split into MediaSeason (TV) or MediaVersion (Movie)
     Include Bookmark option here
@@ -195,15 +196,15 @@ def MediaSubPage(title, thumb, url, category=None):
 
     bm = Dict['Bookmarks']
 
-    if ((True if [b['url'] for b in bm[category] if b['url'] == url] else False) if category in bm.keys() else False) if bm else False:
+    if ((True if [b['id'] for b in bm[category] if b['id'] == item_id] else False) if category in bm.keys() else False) if bm else False:
         oc.add(DirectoryObject(
-            key=Callback(RemoveBookmark, title=title, url=url, category=category),
+            key=Callback(RemoveBookmark, title=title, item_id=item_id, category=category),
             title='Remove Bookmark',
             summary='Remove \"%s\" from your Bookmarks list.' %title
             ))
     else:
         oc.add(DirectoryObject(
-            key=Callback(AddBookmark, title=title, thumb=thumb, url=url, category=category),
+            key=Callback(AddBookmark, title=title, thumb=thumb, url=url, category=category, item_id=item_id),
             title='Add Bookmark',
             summary='Add \"%s\" to your Bookmarks list.' %title
             ))
@@ -324,10 +325,10 @@ def PerformUpdate():
 
 ####################################################################################################
 @route(PREFIX + '/addbookmark')
-def AddBookmark(title, url, thumb, category):
+def AddBookmark(title, url, thumb, category, item_id):
     """Add Bookmark"""
 
-    new_bookmark = {'title': title, 'url': url, 'thumb': thumb, 'category': category}
+    new_bookmark = {'id': item_id, 'title': title, 'url': url, 'thumb': thumb, 'category': category}
     bm = Dict['Bookmarks']
 
     if not bm:
@@ -337,7 +338,7 @@ def AddBookmark(title, url, thumb, category):
         return MessageContainer('Bookmarks',
             '\"%s\" has been added to your bookmarks.' %title)
     elif category in bm.keys():
-        if (True if [b['url'] for b in bm[category] if b['url'] == url] else False):
+        if (True if [b['id'] for b in bm[category] if b['id'] == item_id] else False):
 
             return MessageContainer('Warning',
                 '\"%s\" is already in your bookmarks.' %title)
@@ -358,7 +359,7 @@ def AddBookmark(title, url, thumb, category):
 
 ####################################################################################################
 @route(PREFIX + '/removebookmark')
-def RemoveBookmark(title, url, category):
+def RemoveBookmark(title, item_id, category):
     """
     Remove Bookmark from Bookmark Dictionary
     If Bookmark to remove is the last Bookmark in the Dictionary,
@@ -367,10 +368,10 @@ def RemoveBookmark(title, url, category):
 
     bm = Dict['Bookmarks']
 
-    if ((True if [b['url'] for b in bm[category] if b['url'] == url] else False) if category in bm.keys() else False) if bm else False:
+    if ((True if [b['id'] for b in bm[category] if b['id'] == item_id] else False) if category in bm.keys() else False) if bm else False:
         bm_c = bm[category]
         for i in xrange(len(bm_c)):
-            if bm_c[i]['url'] == url:
+            if bm_c[i]['id'] == item_id:
                 bm_c.pop(i)
                 Dict.Save()
                 break
