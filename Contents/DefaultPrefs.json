@@ -4,7 +4,7 @@
 		"type": "enum",
 		"label": "Site URL",
 		"values": ["https://www.primewire.ag", "http://www.primewire.ag", "http://primewire.filespook.com"],
-		"default": "https://www.primewire.ag"
+		"default": "http://www.primewire.ag"
 	},
 	{
 		"id": "pw_username",
