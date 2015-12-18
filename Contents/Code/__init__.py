@@ -1,6 +1,11 @@
 TITLE = 'PrimeWire'
 PREFIX = '/video/lmwtkiss'
 
+MOVIE_ICON = 'icon-movie.png'
+TV_ICON = 'icon-tv.png'
+BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
+BOOKMARK_REMOVE_ICON = 'icon-remove-bookmark.png'
+
 import updater
 updater.init(repo='piplongrun/lmwt-kiss.bundle', branch='master')
 
@@ -23,9 +28,9 @@ def MainMenu():
     oc = ObjectContainer(no_cache=True)
 
     updater.add_button_to(oc, PerformUpdate)
-    oc.add(DirectoryObject(key=Callback(Section, title='Movies', type='movies'), title='Movies'))
-    oc.add(DirectoryObject(key=Callback(Section, title='TV Shows', type='tv'), title='TV Shows'))
-    oc.add(DirectoryObject(key=Callback(BookmarksMain), title='My Bookmarks'))
+    oc.add(DirectoryObject(key=Callback(Section, title='Movies', type='movies'), title='Movies', thumb=R(MOVIE_ICON)))
+    oc.add(DirectoryObject(key=Callback(Section, title='TV Shows', type='tv'), title='TV Shows', thumb=R(TV_ICON)))
+    oc.add(DirectoryObject(key=Callback(BookmarksMain), title='My Bookmarks', thumb=R('icon-bookmarks.png')))
     oc.add(PrefsObject(title='Preferences'))
     oc.add(InputDirectoryObject(key=Callback(Search), title='Search', prompt='Search', thumb=R('icon-search.png')))
 
@@ -50,9 +55,14 @@ def BookmarksMain():
             del Dict['Bookmarks'][key]
             Dict.Save()
         else:
+            if 'TV' in key:
+                thumb=R(TV_ICON)
+            else:
+                thumb=R(MOVIE_ICON)
+
             oc.add(DirectoryObject(
                 key=Callback(BookmarksSub, category=key),
-                title=key, summary='Display %s Bookmarks' %key
+                title=key, summary='Display %s Bookmarks' %key, thumb=thumb
                 ))
 
     if len(oc) > 0:
@@ -200,13 +210,15 @@ def MediaSubPage(title, thumb, url, item_id, category=None):
         oc.add(DirectoryObject(
             key=Callback(RemoveBookmark, title=title, item_id=item_id, category=category),
             title='Remove Bookmark',
-            summary='Remove \"%s\" from your Bookmarks list.' %title
+            summary='Remove \"%s\" from your Bookmarks list.' %title,
+            thumb=R(BOOKMARK_REMOVE_ICON)
             ))
     else:
         oc.add(DirectoryObject(
             key=Callback(AddBookmark, title=title, thumb=thumb, url=url, category=category, item_id=item_id),
             title='Add Bookmark',
-            summary='Add \"%s\" to your Bookmarks list.' %title
+            summary='Add \"%s\" to your Bookmarks list.' %title,
+            thumb=R(BOOKMARK_ADD_ICON)
             ))
 
     return oc
@@ -309,10 +321,14 @@ def Search(query=''):
 
     for c, url in c_list:
         rel_url = url %(String.Quote(query, usePlus=True).lower())
+        if 'TV' in c:
+            thumb=R(TV_ICON)
+        else:
+            thumb=R(MOVIE_ICON)
 
         oc.add(DirectoryObject(
             key=Callback(Media, title=query, rel_url=rel_url, search=True),
-            title=c
+            title=c, thumb=thumb
             ))
 
     return oc

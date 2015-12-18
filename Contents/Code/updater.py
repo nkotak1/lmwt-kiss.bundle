@@ -73,5 +73,6 @@ def add_button_to(container, cb):
     if update_available():
         container.add(DirectoryObject(
             title = L('updater.label.update-now'),
-            key   = Callback(cb)
+            key   = Callback(cb),
+            thumb = R('icon-update.png')
         ))
