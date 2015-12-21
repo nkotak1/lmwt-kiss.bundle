@@ -4,14 +4,8 @@
 		"type": "enum",
 		"label": "Site URL",
 		"values": [
-			"https://www.primewire.ag"
+			"http://www.primewire.ag"
 		],
-		"default": "https://www.primewire.ag"
-	},
-	{
-		"id": "pw_username",
-		"type": "text",
-		"label": "Username",
-		"default": ""
+		"default": "http://www.primewire.ag"
 	}
 ]
