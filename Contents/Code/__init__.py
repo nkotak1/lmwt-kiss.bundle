@@ -284,16 +284,7 @@ def MediaSeasons(url, title, thumb):
 	if DomainTest() != False:
 		return DomainTest()
 
-	try:
-		try:
-			html = HTML.ElementFromURL(url)
-			Log('* try1 true')
-		except:
-			Log('* try1 false')
-			html = HTML.ElementFromURL(url.split('-online-free')[0])
-	except:
-		Log('* try1 overall false')
-		html = HTML.ElementFromURL(url + '-online-free')
+	html = HTML.ElementFromURL(url)
 
 	oc = ObjectContainer(title2=title)
 

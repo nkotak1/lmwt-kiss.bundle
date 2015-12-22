@@ -1,7 +1,7 @@
 PrimeWire (formerly LetMeWatchThis)
 =========
 
-_Keep It Simple, Stupid_ _(KISS)_
+_Keep It Simple, Stupid_ _([KISS](https://en.wikipedia.org/wiki/KISS_principle))_ _Version_
 
 This is a plugin that creates a new channel in [Plex Media Server](https://plex.tv/) (PMS) to view content from [PrimeWire](http://www.primewire.ag).
 
