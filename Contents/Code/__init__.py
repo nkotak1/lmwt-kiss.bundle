@@ -11,8 +11,8 @@ def Start():
 
     ObjectContainer.title1 = TITLE
     DirectoryObject.thumb = R('icon-default.jpg')
-    #HTTP.CacheTime = CACHE_1HOUR
-    HTTP.CacheTime = 0
+    HTTP.CacheTime = CACHE_1HOUR
+    #HTTP.CacheTime = 0
     HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 
     ValidatePrefs()
