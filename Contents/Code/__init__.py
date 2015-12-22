@@ -7,7 +7,7 @@ BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
 BOOKMARK_REMOVE_ICON = 'icon-remove-bookmark.png'
 
 import updater
-updater.init(repo='Twoure/lmwt-kiss.bundle', branch='dev')
+updater.init(repo='piplongrun/lmwt-kiss.bundle', branch='master')
 
 ####################################################################################################
 def Start():
@@ -172,7 +172,6 @@ def Media(title, rel_url, page=1, search=False):
 
 	url = Dict['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
 
-	#if ((Dict['pw_site_url_old'] == Dict['pw_site_url']) if Dict['pw_site_url_old'] else False):
 	if Dict['pw_site_url'] == Dict['pw_site_url_old']:
 		html = HTML.ElementFromURL(url)
 	else:
