@@ -327,6 +327,8 @@ def MediaVersions(url, title, thumb):
 
 	if DomainTest() != False:
 		return DomainTest()
+	elif not url.startswith('http'):
+		url = Dict['pw_site_url'] + url
 
 	html = HTML.ElementFromURL(url)
 	summary = html.xpath('//meta[@name="description"]/@content')[0].split(' online - ', 1)[-1].split('. Download ')[0]
@@ -346,7 +348,7 @@ def MediaVersions(url, title, thumb):
 			host = url.split('/')[2].replace('www.', '')
 
 			oc.add(DirectoryObject(
-				key = Callback(MediaPlayback, url=url),
+				key = Callback(MediaPlayback, url=url, title=title),
 				title = '%s - %s' % (host, title),
 				summary = summary,
 				thumb = thumb
@@ -359,12 +361,12 @@ def MediaVersions(url, title, thumb):
 
 ####################################################################################################
 @route(PREFIX + '/media/playback')
-def MediaPlayback(url):
+def MediaPlayback(url, title):
 
 	if DomainTest() != False:
 		return DomainTest()
 
-	oc = ObjectContainer()
+	oc = ObjectContainer(title2=title)
 	oc.add(URLService.MetadataObjectForURL(url))
 
 	return oc
