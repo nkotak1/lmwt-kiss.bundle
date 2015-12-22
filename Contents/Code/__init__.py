@@ -11,17 +11,11 @@ def Start():
 
     ObjectContainer.title1 = TITLE
     DirectoryObject.thumb = R('icon-default.jpg')
-    HTTP.CacheTime = CACHE_1HOUR
+    #HTTP.CacheTime = CACHE_1HOUR
+    HTTP.CacheTime = 0
     HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 
-####################################################################################################
-def ValidatePrefs():
-    """
-    Need to check urls
-    if no good then block channel from running
-    """
-
-    pass
+    ValidatePrefs()
 
 ####################################################################################################
 @handler(PREFIX, TITLE)
@@ -38,6 +32,53 @@ def MainMenu():
     return oc
 
 ####################################################################################################
+@route(PREFIX + '/validateprefs')
+def ValidatePrefs():
+    """
+    Need to check urls
+    if no good then block channel from running
+    """
+
+    if (Prefs['pw_site_url'] != Dict['pw_site_url']) and not Prefs['custom_url']:
+        Dict['pw_site_url'] = Prefs['pw_site_url']
+    elif Prefs['custom_url']:
+        Dict['pw_site_url'] = Prefs['pw_site_url_custom']
+    Dict.Save()
+    Log.Debug('*' * 80)
+
+    try:
+        test = HTTP.Request(Dict['pw_site_url'] + '/watch-2741621-Brooklyn-Nine-Nine', cacheTime=0).headers
+        Log.Debug('* \"%s\" is a valid url' %Dict['pw_site_url'])
+        Log.Debug('* \"%s\" headers = %s' %(Dict['pw_site_url'], test))
+        Dict['domain_test'] = 'Pass'
+        #url = Dict['pw_site_url'] + '/watch-2741621-Brooklyn-Nine-Nine'
+        #html = HTML.ElementFromURL(Dict['pw_site_url'], cacheTime=0)
+        #Log.Debug('* test = %s' %html.xpath('//a[contains(@href, "/?tv")]'))
+        #if html.xpath('//a[contains(@href, "/?tv")]'):
+            #Log.Debug('* %s is a valid url' %Dict['pw_site_url'])
+            #Dict['domain_test'] = 'Pass'
+        #else:
+            #Log.Debug('* %s is not valid. Pick different url' %Dict['pw_site_url'])
+            #Dict['domain_test'] = 'Fail'
+    except:
+        Log.Debug('* \"%s\" is not a valid domain for this channel.' %Dict['pw_site_url'])
+        Log.Debug('* Please pick a different URL')
+        Dict['domain_test'] = 'Fail'
+
+    Log.Debug('*' * 80)
+    Dict.Save()
+
+####################################################################################################
+def DomainTest():
+    """Setup MessageContainer if Dict[\'domain_test\'] failed"""
+
+    if Dict['domain_test'] == 'Fail':
+        return MessageContainer('Error',
+            '%s is NOT a Valid Site URL for this channel.  Please pick a different Site URL.' %Dict['pw_site_url'])
+    else:
+        return False
+
+####################################################################################################
 @route(PREFIX + '/bookmarksmain')
 def BookmarksMain():
     """
@@ -46,7 +87,10 @@ def BookmarksMain():
     """
 
     bm = Dict['Bookmarks']
-    if not bm:
+
+    if DomainTest() != False:
+        return DomainTest()
+    elif not bm:
         return MessageContainer('Bookmarks', 'Bookmarks list Empty')
 
     oc = ObjectContainer(title2='My Bookmarks', no_cache=True)
@@ -77,7 +121,10 @@ def BookmarksSub(category):
     """List Bookmarks Alphabetically"""
 
     bm = Dict['Bookmarks']
-    if not category in bm.keys():
+
+    if DomainTest() != False:
+        return DomainTest()
+    elif not category in bm.keys():
         return MessageContainer('Error',
             '%s Bookmarks list is dirty, or no %s Bookmark list exist.' %(category, category))
 
@@ -104,6 +151,9 @@ def BookmarksSub(category):
 @route(PREFIX + '/section')
 def Section(title, type='movies'):
 
+    if DomainTest() != False:
+        return DomainTest()
+
     if type == 'tv':
         rel_url = 'index.php?tv=&sort=%s'
     else:
@@ -123,12 +173,16 @@ def Section(title, type='movies'):
 @route(PREFIX + '/media', page=int, search=bool)
 def Media(title, rel_url, page=1, search=False):
 
-    url = Prefs['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
+    if DomainTest() != False:
+        return DomainTest()
 
-    if ((Dict['pw_site_url'] == Prefs['pw_site_url']) if Dict['pw_site_url'] else False):
+    url = Dict['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
+
+    #if ((Dict['pw_site_url_old'] == Dict['pw_site_url']) if Dict['pw_site_url_old'] else False):
+    if Dict['pw_site_url'] == Dict['pw_site_url_old']:
         html = HTML.ElementFromURL(url)
     else:
-        Dict['pw_site_url'] = Prefs['pw_site_url']
+        Dict['pw_site_url_old'] = Dict['pw_site_url']
         Dict.Save()
         html = HTML.ElementFromURL(url, cacheTime=0)
 
@@ -182,10 +236,13 @@ def MediaSubPage(title, thumb, item_url, item_id, category=None):
     Include Bookmark option here
     """
 
+    if DomainTest() != False:
+        return DomainTest()
+
     oc = ObjectContainer(title2=title, no_cache=True)
 
     if not item_url.startswith('http'):
-        url = Prefs['pw_site_url'] + item_url
+        url = Dict['pw_site_url'] + item_url
     else:
         url = item_url
 
@@ -230,7 +287,19 @@ def MediaSubPage(title, thumb, item_url, item_id, category=None):
 @route(PREFIX + '/media/seasons')
 def MediaSeasons(url, title, thumb):
 
-    html = HTML.ElementFromURL(url)
+    if DomainTest() != False:
+        return DomainTest()
+
+    try:
+        try:
+            html = HTML.ElementFromURL(url)
+            Log('* try1 true')
+        except:
+            Log('* try1 false')
+            html = HTML.ElementFromURL(url.split('-online-free')[0])
+    except:
+        Log('* try1 overall false')
+        html = HTML.ElementFromURL(url + '-online-free')
 
     oc = ObjectContainer(title2=title)
 
@@ -247,6 +316,9 @@ def MediaSeasons(url, title, thumb):
 ####################################################################################################
 @route(PREFIX + '/media/episodes')
 def MediaEpisodes(url, title, thumb):
+
+    if DomainTest() != False:
+        return DomainTest()
 
     html = HTML.ElementFromURL(url)
 
@@ -273,8 +345,8 @@ def MediaEpisodes(url, title, thumb):
 @route(PREFIX + '/media/versions')
 def MediaVersions(url, title, thumb):
 
-    if not url.startswith('http'):
-        url = '%s%s' % (Prefs['pw_site_url'], url)
+    if DomainTest() != False:
+        return DomainTest()
 
     html = HTML.ElementFromURL(url)
     summary = html.xpath('//meta[@name="description"]/@content')[0].split(' online - ', 1)[-1].split('. Download ')[0]
@@ -309,6 +381,9 @@ def MediaVersions(url, title, thumb):
 @route(PREFIX + '/media/playback')
 def MediaPlayback(url):
 
+    if DomainTest() != False:
+        return DomainTest()
+
     oc = ObjectContainer()
     oc.add(URLService.MetadataObjectForURL(url))
 
@@ -317,6 +392,9 @@ def MediaPlayback(url):
 ####################################################################################################
 @route(PREFIX + '/media/search')
 def Search(query=''):
+
+    if DomainTest() != False:
+        return DomainTest()
 
     oc = ObjectContainer(title2='Search for \"%s\"' %query)
 
@@ -340,6 +418,9 @@ def Search(query=''):
 @route(PREFIX + '/addbookmark')
 def AddBookmark(title, url, thumb, category, item_id):
     """Add Bookmark"""
+
+    if DomainTest() != False:
+        return DomainTest()
 
     new_bookmark = {'id': item_id, 'title': title, 'url': url, 'thumb': thumb, 'category': category}
     bm = Dict['Bookmarks']
