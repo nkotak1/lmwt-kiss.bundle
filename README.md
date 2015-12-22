@@ -3,12 +3,13 @@ PrimeWire (formerly LetMeWatchThis)
 
 _Keep It Simple, Stupid_ _([KISS](https://en.wikipedia.org/wiki/KISS_principle))_ _Version_
 
-> **Note: 1** This is a replacement for @piplongrun's [lmwt-kiss.bundle](https://github.com/piplongrun/lmwt-kiss.bundle) channel.
-> **Note: 2** The Updater is set to this channel not @piplongrun.
+> **Note: 1** This is a replacement for [piplongrun](https://github.com/piplongrun)'s [lmwt-kiss.bundle](https://github.com/piplongrun/lmwt-kiss.bundle) channel.
+
+> **Note: 2** The Updater is set to this channel not [piplongrun](https://github.com/piplongrun).
+
+> **Note: 3** the author of this plugin has no affiliation with [PrimeWire](http://www.primewire.ag) nor the owners of the content that they host.
 
 This is a plugin that creates a new channel in [Plex Media Server](https://plex.tv/) (PMS) to view content from [PrimeWire](http://www.primewire.ag).
-
-> **Note:** the author of this plugin has no affiliation with [PrimeWire](http://www.primewire.ag) nor the owners of the content that they host.
 
 ## Features
 
