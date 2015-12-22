@@ -3,13 +3,19 @@
     "id": "pw_site_url",
     "type": "enum",
     "label": "Site URL",
-    "values": ["http://www.primewire.ag", "http://primewire.filespook.com", "http://www.letmewatchthis.video", "http://www.primewire.org", "http://www.letmewatchthis.lv", "https://primewire.unblocked.pe", "http://www.primewire.sg", "http://www.primewire.tw"],
+    "values": ["http://www.primewire.ag", "http://www.primewire.org", "http://primewire.filespook.com"],
     "default": "http://www.primewire.ag"
   },
   {
-    "id": "pw_username",
+    "id": "custom_url",
+    "type": "bool",
+    "label": "Use Custom Site URL",
+    "default": "Flase"
+  },
+  {
+    "id": "pw_site_url_custom",
     "type": "text",
-    "label": "Username",
+    "label": "Custom Site URL",
     "default": ""
   }
 ]
