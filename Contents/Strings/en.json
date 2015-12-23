@@ -1,5 +1,8 @@
 {
-	"updater.label.updating": "Updating ...",
-	"updater.label.update-now": "Update Now",
-	"updater.response.updating": "Please wait while the channel is updating."
+  "prefix": "/video/lmwtkiss",
+  "title": "PrimeWire",
+
+  "updater.label.updating": "Updating ...",
+  "updater.label.update-now": "Update Now",
+  "updater.response.updating": "Please wait while the channel is updating."
 }

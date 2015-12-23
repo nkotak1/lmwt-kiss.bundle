@@ -1,13 +1,20 @@
-TITLE = 'PrimeWire'
-PREFIX = '/video/lmwtkiss'
+import updater
+import bookmarks
+
+INFO_PLIST = Plist.ObjectFromString(Core.storage.load(Core.storage.abs_path(
+    Core.storage.join_path(Core.bundle_path, 'Contents', 'Info.plist')
+    )))
+
+TITLE = INFO_PLIST['CFBundleTitle']
+PREFIX = INFO_PLIST['CFBundlePrefix']
 
 MOVIE_ICON = 'icon-movie.png'
 TV_ICON = 'icon-tv.png'
 BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
 BOOKMARK_REMOVE_ICON = 'icon-remove-bookmark.png'
 
-import updater
 updater.init(repo='Twoure/lmwt-kiss.bundle', branch='new_master')
+BM = bookmarks.Bookmark()
 
 ####################################################################################################
 def Start():
@@ -15,7 +22,12 @@ def Start():
     ObjectContainer.title1 = TITLE
     DirectoryObject.thumb = R('icon-default.jpg')
     HTTP.CacheTime = CACHE_1HOUR
-    HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
+    #HTTP.CacheTime = 0
+    HTTP.Headers['User-Agent'] = (
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/41.0.2272.101 Safari/537.36'
+        )
 
     ValidatePrefs()
 
@@ -257,22 +269,7 @@ def MediaSubPage(title, thumb, item_url, item_id, category=None):
             thumb = thumb
             ))
 
-    bm = Dict['Bookmarks']
-
-    if ((True if [b['id'] for b in bm[category] if b['id'] == item_id] else False) if category in bm.keys() else False) if bm else False:
-        oc.add(DirectoryObject(
-            key=Callback(RemoveBookmark, title=title, item_id=item_id, category=category),
-            title='Remove Bookmark',
-            summary='Remove \"%s\" from your Bookmarks list.' %title,
-            thumb=R(BOOKMARK_REMOVE_ICON)
-            ))
-    else:
-        oc.add(DirectoryObject(
-            key=Callback(AddBookmark, title=title, thumb=thumb, url=item_url, category=category, item_id=item_id),
-            title='Add Bookmark',
-            summary='Add \"%s\" to your Bookmarks list.' %title,
-            thumb=R(BOOKMARK_ADD_ICON)
-            ))
+    BM.add_remove_bookmark(title, thumb, item_url, item_id, category, oc)
 
     return oc
 
@@ -405,69 +402,3 @@ def Search(query=''):
 def PerformUpdate():
 
     return updater.PerformUpdate()
-
-####################################################################################################
-@route(PREFIX + '/addbookmark')
-def AddBookmark(title, url, thumb, category, item_id):
-    """Add Bookmark"""
-
-    if DomainTest() != False:
-        return DomainTest()
-
-    new_bookmark = {'id': item_id, 'title': title, 'url': url, 'thumb': thumb, 'category': category}
-    bm = Dict['Bookmarks']
-
-    if not bm:
-        Dict['Bookmarks'] = {category: [new_bookmark]}
-        Dict.Save()
-
-        return MessageContainer('Bookmarks',
-            '\"%s\" has been added to your bookmarks.' %title)
-    elif category in bm.keys():
-        if (True if [b['id'] for b in bm[category] if b['id'] == item_id] else False):
-
-            return MessageContainer('Warning',
-                '\"%s\" is already in your \"%s\" bookmark list.' %(title, category))
-        else:
-            temp = {}
-            temp.setdefault(category, bm[category]).append(new_bookmark)
-            Dict['Bookmarks'][category] = temp[category]
-            Dict.Save()
-
-            return MessageContainer('Bookmarks',
-                '\"%s\" added to your \"%s\" bookmark list.' %(title, category))
-    else:
-        Dict['Bookmarks'].update({category: [new_bookmark]})
-        Dict.Save()
-
-        return MessageContainer('Bookmarks',
-            '\"%s\" added to your \"%s\" bookmark list.' %(title, category))
-
-####################################################################################################
-@route(PREFIX + '/removebookmark')
-def RemoveBookmark(title, item_id, category):
-    """
-    Remove Bookmark from Bookmark Dictionary
-    If Bookmark to remove is the last Bookmark in the Dictionary,
-    then Remove the Bookmark Dictionary also
-    """
-
-    bm = Dict['Bookmarks']
-
-    if ((True if [b['id'] for b in bm[category] if b['id'] == item_id] else False) if category in bm.keys() else False) if bm else False:
-        bm_c = bm[category]
-        for i in xrange(len(bm_c)):
-            if bm_c[i]['id'] == item_id:
-                bm_c.pop(i)
-                Dict.Save()
-                break
-
-        if len(bm_c) == 0:
-            del bm_c
-            Dict.Save()
-
-            return MessageContainer('Remove Bookmark',
-                '\"%s\" bookmark was the last, so removed \"%s\" bookmark section' %(title, category))
-        else:
-            return MessageContainer('Remove Bookmark',
-                '\"%s\" removed from your \"%s\" bookmark list.' %(title, category))
