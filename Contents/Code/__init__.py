@@ -8,6 +8,8 @@ INFO_PLIST = Plist.ObjectFromString(Core.storage.load(Core.storage.abs_path(
 TITLE = INFO_PLIST['CFBundleTitle']
 PREFIX = INFO_PLIST['CFBundlePrefix']
 
+ICON = 'icon-default.jpg'
+ART = 'art-default.jpg'
 MOVIE_ICON = 'icon-movie.png'
 TV_ICON = 'icon-tv.png'
 BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
@@ -19,7 +21,14 @@ BM = bookmarks.Bookmark()
 def Start():
 
     ObjectContainer.title1 = TITLE
-    DirectoryObject.thumb = R('icon-default.jpg')
+
+    DirectoryObject.thumb = R(ICON)
+    DirectoryObject.art = R(ART)
+
+    InputDirectoryObject.art = R(ART)
+
+    VideoClipObject.art = R(ART)
+
     HTTP.CacheTime = CACHE_1HOUR
     HTTP.Headers['User-Agent'] = (
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) '
@@ -30,7 +39,7 @@ def Start():
     ValidatePrefs()
 
 ####################################################################################################
-@handler(PREFIX, TITLE)
+@handler(PREFIX, TITLE, thumb=ICON, art=ART)
 def MainMenu():
 
     oc = ObjectContainer(no_cache=True)
