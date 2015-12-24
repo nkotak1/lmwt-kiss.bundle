@@ -1,5 +1,5 @@
-import updater
 import bookmarks
+from updater import Updater
 
 INFO_PLIST = Plist.ObjectFromString(Core.storage.load(Core.storage.abs_path(
     Core.storage.join_path(Core.bundle_path, 'Contents', 'Info.plist')
@@ -13,7 +13,6 @@ TV_ICON = 'icon-tv.png'
 BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
 BOOKMARK_REMOVE_ICON = 'icon-remove-bookmark.png'
 
-updater.init(repo='Twoure/lmwt-kiss.bundle', branch='new_master')
 BM = bookmarks.Bookmark()
 
 ####################################################################################################
@@ -22,7 +21,6 @@ def Start():
     ObjectContainer.title1 = TITLE
     DirectoryObject.thumb = R('icon-default.jpg')
     HTTP.CacheTime = CACHE_1HOUR
-    #HTTP.CacheTime = 0
     HTTP.Headers['User-Agent'] = (
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) '
         'AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -37,7 +35,8 @@ def MainMenu():
 
     oc = ObjectContainer(no_cache=True)
 
-    updater.add_button_to(oc, PerformUpdate)
+    Updater(PREFIX + '/updater', oc)
+
     oc.add(DirectoryObject(key=Callback(Section, title='Movies', type='movies'), title='Movies', thumb=R(MOVIE_ICON)))
     oc.add(DirectoryObject(key=Callback(Section, title='TV Shows', type='tv'), title='TV Shows', thumb=R(TV_ICON)))
     oc.add(DirectoryObject(key=Callback(BookmarksMain), title='My Bookmarks', thumb=R('icon-bookmarks.png')))
@@ -79,7 +78,7 @@ def DomainTest():
     """Setup MessageContainer if Dict[\'domain_test\'] failed"""
 
     if Dict['domain_test'] == 'Fail':
-        return MessageContainer('Error',
+        return BM.message_container('Error',
             '%s is NOT a Valid Site URL for this channel.  Please pick a different Site URL.' %Dict['pw_site_url'])
     else:
         return False
@@ -97,7 +96,7 @@ def BookmarksMain():
     if DomainTest() != False:
         return DomainTest()
     elif not bm:
-        return MessageContainer('Bookmarks', 'Bookmarks list Empty')
+        return BM.message_container('Bookmarks', 'Bookmarks list Empty')
 
     oc = ObjectContainer(title2='My Bookmarks', no_cache=True)
 
@@ -119,7 +118,7 @@ def BookmarksMain():
     if len(oc) > 0:
         return oc
     else:
-        return MessageContainer('Bookmarks', 'Bookmark list Empty')
+        return BM.message_container('Bookmarks', 'Bookmark list Empty')
 
 ####################################################################################################
 @route(PREFIX + '/bookmarkssub')
@@ -131,7 +130,7 @@ def BookmarksSub(category):
     if DomainTest() != False:
         return DomainTest()
     elif not category in bm.keys():
-        return MessageContainer('Error',
+        return BM.message_container('Error',
             '%s Bookmarks list is dirty, or no %s Bookmark list exist.' %(category, category))
 
     oc = ObjectContainer(title2='My Bookmarks | %s' %category, no_cache=True)
@@ -151,7 +150,7 @@ def BookmarksSub(category):
     if len(oc) > 0:
         return oc
     else:
-        return MessageContainer('Bookmarks', '%s Bookmarks list Empty' %category)
+        return BM.message_container('Bookmarks', '%s Bookmarks list Empty' %category)
 
 ####################################################################################################
 @route(PREFIX + '/section')
@@ -227,10 +226,10 @@ def Media(title, rel_url, page=1, search=False):
     if len(oc) > 0:
         return oc
     elif search:
-        return MessageContainer('Search',
+        return BM.message_container('Search',
             'No Search results for \"%s\"' %title)
     else:
-        return MessageContainer('Error',
+        return BM.message_container('Error',
             'No media for \"%s\"' %title)
 
 ####################################################################################################
@@ -396,9 +395,3 @@ def Search(query=''):
             ))
 
     return oc
-
-####################################################################################################
-@route(PREFIX + '/performupdate')
-def PerformUpdate():
-
-    return updater.PerformUpdate()
