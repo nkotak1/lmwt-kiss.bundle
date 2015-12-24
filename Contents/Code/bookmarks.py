@@ -1,3 +1,9 @@
+####################################################################################################
+#                                                                                                  #
+#                               Plex Channel Bookmark Class                                        #
+#                                                                                                  #
+####################################################################################################
+
 class Bookmark(object):
 
     def __init__(self):
@@ -6,10 +12,8 @@ class Bookmark(object):
 
         Route.Connect(self.prefix + '/bookmark/add', self.add)
         Route.Connect(self.prefix + '/bookmark/remove', self.remove)
-        #Route.Connect(self.prefix + '/bookmark/menu/main', self.create_bookmark_main_menu)
-        #Route.Connect(self.prefix + '/bookmark/menu/sub', self.create_bookmark_sub_menu)
 
-    ####################################################################################################
+    ################################################################################################
     def get_prefix(self):
         """Get channel prefix from Info.plist"""
 
@@ -19,24 +23,26 @@ class Bookmark(object):
 
         return plist['CFBundlePrefix']
 
-    ####################################################################################################
+    ################################################################################################
     def bookmark_exist(self, item_id, category):
         """Test if bookmark exist"""
 
         return ((True if [b['id'] for b in self.bm[category] if b['id'] == item_id] else False) if category in self.bm.keys() else False) if self.bm else False
 
-    ####################################################################################################
+    ################################################################################################
     def message_container(self, header, message):
         """Setup MessageContainer depending on Platform"""
 
         if Client.Platform in ['Plex Home Theater', 'OpenPHT']:
-            oc = ObjectContainer(title1='PrimeWire', title2=header, no_cache=True, no_history=True, replace_parent=True)
+            oc = ObjectContainer(title1='PrimeWire', title2=header, no_cache=True,
+                no_history=True, replace_parent=True)
             oc.add(PopupDirectoryObject(title=header, summary=message))
+
             return oc
         else:
             return MessageContainer(header, message)
 
-    ####################################################################################################
+    ################################################################################################
     def add(self, title, url, thumb, category, item_id):
         """Add bookmark to Dict"""
 
@@ -67,7 +73,7 @@ class Bookmark(object):
             return self.message_container('\"%s\" Bookmark Added' %title,
                 '\"%s\" added to your \"%s\" bookmark list.' %(title, category))
 
-    ####################################################################################################
+    ################################################################################################
     def remove(self, title, item_id, category):
         """
         Remove Bookmark from Bookmark Dictionary
@@ -99,69 +105,7 @@ class Bookmark(object):
             return self.message_container('Error',
                 'ERROR: \"%s\" not found in \"%s\" bookmark list.' %(title, category))
 
-    ####################################################################################################
-    def create_bookmark_main_menu(self, oc):
-        """
-        Setup Bookmark Main Menu.
-        Seperate by TV or Movies
-        """
-
-        if not self.bm:
-            return MessageContainer('Bookmarks', 'Bookmarks list Empty')
-
-        #oc = ObjectContainer(title2='My Bookmarks', no_cache=True)
-
-        for key in sorted(self.bm.keys()):
-            if len(self.bm[key]) == 0:
-                del Dict['Bookmarks'][key]
-                Dict.Save()
-            else:
-                if 'TV' in key:
-                    thumb=R('icon-tv.png')
-                else:
-                    thumb=R('icon-movie.png')
-
-                oc.add(DirectoryObject(
-                    key=Callback(self.create_bookmark_sub_menu, category=key),
-                    title=key, summary='Display %s Bookmarks' %key, thumb=thumb
-                    ))
-
-        if len(oc) > 0:
-            pass
-            #return oc
-        else:
-            return MessageContainer('Bookmarks', 'Bookmark list Empty')
-
-    ####################################################################################################
-    def create_bookmark_sub_menu(self, category):
-        """Setup Bookmarks Sub Menu"""
-        """List Bookmarks Alphabetically"""
-
-        if not category in self.bm.keys():
-            return MessageContainer('Error',
-                '%s Bookmarks list is dirty, or no %s Bookmark list exist.' %(category, category))
-
-        #oc = ObjectContainer(title2='My Bookmarks | %s' %category, no_cache=True)
-
-        for bookmark in sorted(self.bm[category], key=lambda k: k['title']):
-            title = bookmark['title']
-            thumb = bookmark['thumb']
-            url = bookmark['url']
-            category = bookmark['category']
-            item_id = bookmark['id']
-
-            #oc.add(DirectoryObject(
-                #key=Callback(MediaSubPage, title=title, category=category, thumb=thumb, item_url=url, item_id=item_id),
-                #title=title, thumb=thumb
-                #))
-
-        #if len(oc) > 0:
-            #pass
-            #return oc
-        #else:
-            #return MessageContainer('Bookmarks', '%s Bookmarks list Empty' %category)
-
-    ####################################################################################################
+    ################################################################################################
     def add_remove_bookmark(self, title, thumb, url, item_id, category, oc):
         """Test if bookmark exist"""
 
