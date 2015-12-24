@@ -21,7 +21,7 @@ This is a plugin that creates a new channel in [Plex Media Server](https://plex.
 
 ## Install
 
-- [Download](https://github.com/Twoure/lmwt-kiss.bundle/archive/master.zip) and install it by following the Plex [instructions](https://support.plex.tv/hc/en-us/articles/201187656-How-do-I-manually-install-a-channel-) or the instructions below.
+- [Download](https://github.com/Twoure/lmwt-kiss.bundle/releases) latest release and install it by following the Plex [instructions](https://support.plex.tv/hc/en-us/articles/201187656-How-do-I-manually-install-a-channel-) or the instructions below.
   - Unzip and rename the folder to "lmwt-kiss.bundle"
   - Copy "lmwt-kiss.bundle" into the PMS [Plug-ins](https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-the-Plug-Ins-folder-) directory
   - ~~Restart PMS~~ **This is old, should not have to restart PMS.  If channel does not appear then Restart PMS**
@@ -31,3 +31,5 @@ This is a plugin that creates a new channel in [Plex Media Server](https://plex.
 - Currently there are many PrieWire sites, but not all of them are structured the same.
 - Current URL test is `Domain + '/watch-2741621-Brooklyn-Nine-Nine'`
   - Example: `http://www.primewire.ag/watch-2741621-Brooklyn-Nine-Nine`
+
+## [Changelog](Changelog.md)
