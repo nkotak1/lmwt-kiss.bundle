@@ -1,5 +1,9 @@
 # ChangeLog
 
+##### 1.0.2
+- _12/30/15_
+- Updated Channel Icon to match [piplongrun](https://github.com/piplongrun)
+
 ##### 1.0.1
 - _12/23/15_
 - Updates/New:
