@@ -13,7 +13,7 @@ updater.init(repo='piplongrun/lmwt-kiss.bundle', branch='master')
 def Start():
 
 	ObjectContainer.title1 = TITLE
-	DirectoryObject.thumb = R('icon-default.jpg')
+	DirectoryObject.thumb = R('icon-default.png')
 	HTTP.CacheTime = CACHE_1HOUR
 	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 
