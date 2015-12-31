@@ -8,7 +8,7 @@ INFO_PLIST = Plist.ObjectFromString(Core.storage.load(Core.storage.abs_path(
 TITLE = INFO_PLIST['CFBundleTitle']
 PREFIX = INFO_PLIST['CFBundlePrefix']
 
-ICON = 'icon-default.jpg'
+ICON = 'icon-default.png'
 ART = 'art-default.jpg'
 MOVIE_ICON = 'icon-movie.png'
 TV_ICON = 'icon-tv.png'
