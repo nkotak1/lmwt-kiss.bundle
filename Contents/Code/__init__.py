@@ -1,8 +1,5 @@
 TITLE = 'PrimeWire'
 
-import updater
-updater.init(repo='piplongrun/lmwt-kiss.bundle', branch='master')
-
 ####################################################################################################
 def Start():
 
@@ -22,7 +19,6 @@ def MainMenu():
 
 	oc = ObjectContainer()
 
-	updater.add_button_to(oc, PerformUpdate)
 	oc.add(DirectoryObject(key=Callback(Section, title='Movies', type='movies'), title='Movies'))
 	oc.add(DirectoryObject(key=Callback(Section, title='TV Shows', type='tv'), title='TV Shows'))
 	oc.add(PrefsObject(title='Preferences'))
@@ -202,9 +198,3 @@ def Search(type='movies', query=''):
 		rel_url = 'index.php?search_keywords=%s' % (String.Quote(query, usePlus=True).lower())
 
 	return Media(title=query, rel_url=rel_url)
-
-####################################################################################################
-@route('/video/lmwtkiss/performupdate')
-def PerformUpdate():
-
-	return updater.PerformUpdate()
