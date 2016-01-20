@@ -1,5 +1,10 @@
 # ChangeLog
 
+##### 1.0.4
+- _01/20/16_
+- Added [DumbTools](https://github.com/coryo/DumbTools-for-Plex)
+- Added Disable Bookmarks, so a wider range of URL domains can be tested.  FYI https sites don't usually work with this channel.
+
 ##### 1.0.3
 - _01/03/16_
 - Updated Service Code to match [piplongrun](https://github.com/piplongrun)
