@@ -1,5 +1,7 @@
 import bookmarks
 from updater import Updater
+from DumbTools import DumbKeyboard
+from DumbTools import DumbPrefs
 
 INFO_PLIST = Plist.ObjectFromString(Core.storage.load(Core.storage.abs_path(
     Core.storage.join_path(Core.bundle_path, 'Contents', 'Info.plist')
@@ -46,11 +48,28 @@ def MainMenu():
 
     Updater(PREFIX + '/updater', oc)
 
-    oc.add(DirectoryObject(key=Callback(Section, title='Movies', type='movies'), title='Movies', thumb=R(MOVIE_ICON)))
-    oc.add(DirectoryObject(key=Callback(Section, title='TV Shows', type='tv'), title='TV Shows', thumb=R(TV_ICON)))
-    oc.add(DirectoryObject(key=Callback(BookmarksMain), title='My Bookmarks', thumb=R('icon-bookmarks.png')))
-    oc.add(PrefsObject(title='Preferences'))
-    oc.add(InputDirectoryObject(key=Callback(Search), title='Search', prompt='Search', thumb=R('icon-search.png')))
+    oc.add(DirectoryObject(
+        key=Callback(Section, title='Movies', type='movies'), title='Movies', thumb=R(MOVIE_ICON)
+        ))
+    oc.add(DirectoryObject(
+        key=Callback(Section, title='TV Shows', type='tv'), title='TV Shows', thumb=R(TV_ICON)
+        ))
+    if not Prefs['no_bm']:
+        oc.add(DirectoryObject(
+            key=Callback(BookmarksMain), title='My Bookmarks', thumb=R('icon-bookmarks.png')
+            ))
+
+    if Client.Product in DumbPrefs.clients:
+        DumbPrefs(PREFIX, oc, title='Preferences', thumb=R('icon-prefs.png'))
+    else:
+        oc.add(PrefsObject(title='Preferences'))
+
+    if Client.Product in DumbKeyboard.clients:
+        DumbKeyboard(PREFIX, oc, Search, dktitle='Search', dkthumb=R('icon-search.png'))
+    else:
+        oc.add(InputDirectoryObject(
+            key=Callback(Search), title='Search', prompt='Search', thumb=R('icon-search.png')
+            ))
 
     return oc
 
@@ -69,15 +88,25 @@ def ValidatePrefs():
     Dict.Save()
     Log.Debug('*' * 80)
 
-    try:
-        test = HTTP.Request(Dict['pw_site_url'] + '/watch-2741621-Brooklyn-Nine-Nine', cacheTime=0).headers
-        Log.Debug('* \"%s\" is a valid url' %Dict['pw_site_url'])
-        Log.Debug('* \"%s\" headers = %s' %(Dict['pw_site_url'], test))
-        Dict['domain_test'] = 'Pass'
-    except:
-        Log.Debug('* \"%s\" is not a valid domain for this channel.' %Dict['pw_site_url'])
-        Log.Debug('* Please pick a different URL')
-        Dict['domain_test'] = 'Fail'
+    if not Prefs['no_bm']:
+        try:
+            test = HTTP.Request(Dict['pw_site_url'] + '/watch-2741621-Brooklyn-Nine-Nine', cacheTime=0).headers
+            Log.Debug('* \"%s\" is a valid url' %Dict['pw_site_url'])
+            Log.Debug('* \"%s\" headers = %s' %(Dict['pw_site_url'], test))
+            Dict['domain_test'] = 'Pass'
+        except:
+            Log.Debug('* \"%s\" is not a valid domain for this channel.' %Dict['pw_site_url'])
+            Log.Debug('* Please pick a different URL')
+            Dict['domain_test'] = 'Fail'
+    else:
+        try:
+            test = HTTP.Request(Dict['pw_site_url'], cacheTime=0).headers
+            Log.Debug('* \"%s\" headers = %s' %(Dict['pw_site_url'], test))
+            Dict['domain_test'] = 'Pass'
+        except:
+            Log.Debug('* \"%s\" is not a valid domain for this channel.' %Dict['pw_site_url'])
+            Log.Debug('* Please pick a different URL')
+            Dict['domain_test'] = 'Fail'
 
     Log.Debug('*' * 80)
     Dict.Save()
@@ -87,10 +116,26 @@ def DomainTest():
     """Setup MessageContainer if Dict[\'domain_test\'] failed"""
 
     if Dict['domain_test'] == 'Fail':
-        return BM.message_container('Error',
-            '%s is NOT a Valid Site URL for this channel.  Please pick a different Site URL.' %Dict['pw_site_url'])
+        return BM.message_container('Error', error_message())
     else:
         return False
+
+####################################################################################################
+def error_message():
+    return '%s is NOT a Valid Site URL for this channel.  Please pick a different Site URL.' %Dict['pw_site_url']
+
+####################################################################################################
+def bm_prefs_html(url):
+    if not Prefs['no_bm']:
+        html = HTML.ElementFromURL(url)
+        return (False, html)
+    else:
+        try:
+            html = HTML.ElementFromURL(url, cacheTime=0)
+            return (False, html)
+        except:
+            Log.Debug(error_message())
+            return (True, BM.message_container('Error', error_message()))
 
 ####################################################################################################
 @route(PREFIX + '/bookmarksmain')
@@ -192,12 +237,19 @@ def Media(title, rel_url, page=1, search=False):
 
     url = Dict['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
 
-    if Dict['pw_site_url'] == Dict['pw_site_url_old']:
-        html = HTML.ElementFromURL(url)
+    if not Prefs['no_bm']:
+        if Dict['pw_site_url'] == Dict['pw_site_url_old']:
+            html = HTML.ElementFromURL(url)
+        else:
+            Dict['pw_site_url_old'] = Dict['pw_site_url']
+            Dict.Save()
+            html = HTML.ElementFromURL(url, cacheTime=0)
     else:
-        Dict['pw_site_url_old'] = Dict['pw_site_url']
-        Dict.Save()
-        html = HTML.ElementFromURL(url, cacheTime=0)
+        try:
+            html = HTML.ElementFromURL(url, cacheTime=0)
+        except:
+            Log.Debug(error_message())
+            return BM.message_container('Error', error_message())
 
     oc = ObjectContainer(title2=title, no_cache=True)
 
@@ -260,7 +312,9 @@ def MediaSubPage(title, thumb, item_url, item_id, category=None):
         url = item_url
 
     if not category:
-        html = HTML.ElementFromURL(url)
+        t, html = bm_prefs_html(url)
+        if t:
+            return html
 
         category = 'TV Shows' if html.xpath('//div[@class="tv_container"]') else 'Movies'
 
@@ -288,7 +342,9 @@ def MediaSeasons(url, title, thumb):
     if DomainTest() != False:
         return DomainTest()
 
-    html = HTML.ElementFromURL(url)
+    t, html = bm_prefs_html(url)
+    if t:
+        return html
 
     oc = ObjectContainer(title2=title)
 
@@ -309,7 +365,9 @@ def MediaEpisodes(url, title, thumb):
     if DomainTest() != False:
         return DomainTest()
 
-    html = HTML.ElementFromURL(url)
+    t, html = bm_prefs_html(url)
+    if t:
+        return html
 
     oc = ObjectContainer(title2=title)
 
@@ -339,7 +397,10 @@ def MediaVersions(url, title, thumb):
     elif not url.startswith('http'):
         url = Dict['pw_site_url'] + url
 
-    html = HTML.ElementFromURL(url)
+    t, html = bm_prefs_html(url)
+    if t:
+        return html
+
     summary = html.xpath('//meta[@name="description"]/@content')[0].split(' online - ', 1)[-1].split('. Download ')[0]
 
     oc = ObjectContainer(title2=title)
