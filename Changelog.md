@@ -1,5 +1,10 @@
 # ChangeLog
 
+##### 1.0.4
+- _01/20/16_
+- Fixed Plex Web Search
+- Added Client Platform and Product checks in logs
+
 ##### 1.0.3
 - _01/20/16_
 - Added [DumbTools](https://github.com/coryo/DumbTools-for-Plex)

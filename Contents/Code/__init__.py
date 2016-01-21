@@ -436,6 +436,13 @@ def MediaPlayback(url, title):
     if DomainTest() != False:
         return DomainTest()
 
+    Log.Debug('*' * 80)
+    Log.Debug('* Client.Product         = %s' %Client.Product)
+    Log.Debug('* Client.Platform        = %s' %Client.Platform)
+    Log.Debug('* MediaPlayback Title    = %s' %title)
+    Log.Debug('* MediaPlayback URL      = %s' %url)
+    Log.Debug('*' * 80)
+
     oc = ObjectContainer(title2=title)
     oc.add(URLService.MetadataObjectForURL(url))
 

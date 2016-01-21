@@ -9,7 +9,7 @@
   <key>CFBundleTitle</key>
   <string>PrimeWire</string>
   <key>CFBundleVersion</key>
-  <string>1.0.3</string>
+  <string>1.0.4</string>
   <key>PlexPluginVersionUrl</key>
   <string>https://api.github.com/repos/Twoure/lmwt-kiss.bundle/releases/latest</string>
   <key>PlexClientPlatforms</key>
