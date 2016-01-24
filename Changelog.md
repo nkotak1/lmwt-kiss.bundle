@@ -1,8 +1,9 @@
 # ChangeLog
 
 ##### 1.0.4
-- _01/20/16_
+- _01/23/16_
 - Fixed Plex Web Search
+- Updated DumbTools to latest
 - Added Client Platform and Product checks in logs
 
 ##### 1.0.3
