@@ -1,14 +1,12 @@
 import bookmarks
+import messages
+import AuthTools
 from updater import Updater
 from DumbTools import DumbKeyboard
 from DumbTools import DumbPrefs
 
-INFO_PLIST = Plist.ObjectFromString(Core.storage.load(Core.storage.abs_path(
-    Core.storage.join_path(Core.bundle_path, 'Contents', 'Info.plist')
-    )))
-
-TITLE = INFO_PLIST['CFBundleTitle']
-PREFIX = INFO_PLIST['CFBundlePrefix']
+TITLE = 'PrimeWire'
+PREFIX = '/video/lmwtkiss'
 
 ICON = 'icon-default.png'
 ART = 'art-default.jpg'
@@ -17,7 +15,8 @@ TV_ICON = 'icon-tv.png'
 BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
 BOOKMARK_REMOVE_ICON = 'icon-remove-bookmark.png'
 
-BM = bookmarks.Bookmark()
+BM = bookmarks.Bookmark(PREFIX, TITLE)
+MC = messages.NewMessageContainer(PREFIX, TITLE)
 
 ####################################################################################################
 def Start():
@@ -61,7 +60,7 @@ def MainMenu():
 
     if Client.Product in DumbPrefs.clients:
         DumbPrefs(PREFIX, oc, title='Preferences', thumb=R('icon-prefs.png'))
-    else:
+    elif AuthTools.Auth():
         oc.add(PrefsObject(title='Preferences'))
 
     if Client.Product in DumbKeyboard.clients:
@@ -116,7 +115,7 @@ def DomainTest():
     """Setup MessageContainer if Dict[\'domain_test\'] failed"""
 
     if Dict['domain_test'] == 'Fail':
-        return BM.message_container('Error', error_message())
+        return MC.message_container('Error', error_message())
     else:
         return False
 
@@ -135,7 +134,7 @@ def bm_prefs_html(url):
             return (False, html)
         except:
             Log.Debug(error_message())
-            return (True, BM.message_container('Error', error_message()))
+            return (True, MC.message_container('Error', error_message()))
 
 ####################################################################################################
 @route(PREFIX + '/bookmarksmain')
@@ -150,7 +149,7 @@ def BookmarksMain():
     if DomainTest() != False:
         return DomainTest()
     elif not bm:
-        return BM.message_container('Bookmarks', 'Bookmarks list Empty')
+        return MC.message_container('Bookmarks', 'Bookmarks list Empty')
 
     oc = ObjectContainer(title2='My Bookmarks', no_cache=True)
 
@@ -172,7 +171,7 @@ def BookmarksMain():
     if len(oc) > 0:
         return oc
     else:
-        return BM.message_container('Bookmarks', 'Bookmark list Empty')
+        return MC.message_container('Bookmarks', 'Bookmark list Empty')
 
 ####################################################################################################
 @route(PREFIX + '/bookmarkssub')
@@ -184,7 +183,7 @@ def BookmarksSub(category):
     if DomainTest() != False:
         return DomainTest()
     elif not category in bm.keys():
-        return BM.message_container('Error',
+        return MC.message_container('Error',
             '%s Bookmarks list is dirty, or no %s Bookmark list exist.' %(category, category))
 
     oc = ObjectContainer(title2='My Bookmarks | %s' %category, no_cache=True)
@@ -204,7 +203,7 @@ def BookmarksSub(category):
     if len(oc) > 0:
         return oc
     else:
-        return BM.message_container('Bookmarks', '%s Bookmarks list Empty' %category)
+        return MC.message_container('Bookmarks', '%s Bookmarks list Empty' %category)
 
 ####################################################################################################
 @route(PREFIX + '/section')
@@ -249,7 +248,7 @@ def Media(title, rel_url, page=1, search=False):
             html = HTML.ElementFromURL(url, cacheTime=0)
         except:
             Log.Debug(error_message())
-            return BM.message_container('Error', error_message())
+            return MC.message_container('Error', error_message())
 
     oc = ObjectContainer(title2=title, no_cache=True)
 
@@ -287,10 +286,10 @@ def Media(title, rel_url, page=1, search=False):
     if len(oc) > 0:
         return oc
     elif search:
-        return BM.message_container('Search',
+        return MC.message_container('Search',
             'No Search results for \"%s\"' %title)
     else:
-        return BM.message_container('Error',
+        return MC.message_container('Error',
             'No media for \"%s\"' %title)
 
 ####################################################################################################
