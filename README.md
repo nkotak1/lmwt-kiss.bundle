@@ -9,6 +9,8 @@ _Keep It Simple, Stupid_ _([KISS](https://en.wikipedia.org/wiki/KISS_principle))
 
 > **Note: 3** the author of this plugin has no affiliation with [PrimeWire](http://www.primewire.ag) nor the owners of the content that they host.
 
+> **Note: 4** If you are looking for the Channel in the [pull request](https://github.com/piplongrun/lmwt-kiss.bundle/pull/4) it is located [here](https://github.com/Twoure/lmwt-kiss.bundle/tree/master) and avalible to download from [here](https://github.com/piplongrun/lmwt-kiss.bundle/archive/master.zip).
+
 This is a plugin that creates a new channel in [Plex Media Server](https://plex.tv/) (PMS) to view content from [PrimeWire](http://www.primewire.ag).
 
 ## Features
@@ -32,4 +34,4 @@ This is a plugin that creates a new channel in [Plex Media Server](https://plex.
 - Current URL test is `Domain + '/watch-2741621-Brooklyn-Nine-Nine'`
   - Example: `http://www.primewire.ag/watch-2741621-Brooklyn-Nine-Nine`
 
-## [Changelog](Changelog.md)
+## [Changelog](Changelog.md#changelog)
