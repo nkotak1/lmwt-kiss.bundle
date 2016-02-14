@@ -1,5 +1,11 @@
 # ChangeLog
 
+##### 1.0.5
+- _02/14/16_
+- Added new Auth check for preferences. Only plex server admin can edit prefs.
+- Updated DumbPrefs, removed PHT
+- New Message system, handles PHT and OpenPHT
+
 ##### 1.0.4
 - _01/23/16_
 - Fixed Plex Web Search
