@@ -6,22 +6,13 @@
 
 class Bookmark(object):
 
-    def __init__(self):
-        self.prefix = self.get_prefix()
+    def __init__(self, prefix, title):
+        Route.Connect(prefix + '/bookmark/add', self.add)
+        Route.Connect(prefix + '/bookmark/remove', self.remove)
+        Route.Connect(prefix + '/message', self.message_container)
+
         self.bm = Dict['Bookmarks']
-
-        Route.Connect(self.prefix + '/bookmark/add', self.add)
-        Route.Connect(self.prefix + '/bookmark/remove', self.remove)
-
-    ################################################################################################
-    def get_prefix(self):
-        """Get channel prefix from Info.plist"""
-
-        plist = Plist.ObjectFromString(Core.storage.load(Core.storage.abs_path(
-            Core.storage.join_path(Core.bundle_path, 'Contents', 'Info.plist')
-            )))
-
-        return plist['CFBundlePrefix']
+        self.title = title
 
     ################################################################################################
     def bookmark_exist(self, item_id, category):
@@ -34,8 +25,10 @@ class Bookmark(object):
         """Setup MessageContainer depending on Platform"""
 
         if Client.Platform in ['Plex Home Theater', 'OpenPHT']:
-            oc = ObjectContainer(title1='PrimeWire', title2=header, no_cache=True,
-                no_history=True, replace_parent=True)
+            oc = ObjectContainer(
+                title1=self.title, title2=header, no_cache=True,
+                no_history=True, replace_parent=True
+                )
             oc.add(PopupDirectoryObject(title=header, summary=message))
 
             return oc
