@@ -23,5 +23,11 @@
     "type": "bool",
     "label": "Disable Bookmarks",
     "default": "Flase"
+  },
+  {
+    "id": "plextv",
+    "label": "Auth Admin through Plex.tv",
+    "type": "bool",
+    "default": "False"
   }
 ]

@@ -1,9 +1,10 @@
 import bookmarks
 import messages
-import AuthTools
+from time import sleep
 from updater import Updater
 from DumbTools import DumbKeyboard
 from DumbTools import DumbPrefs
+from AuthTools import CheckAdmin
 
 TITLE = 'PrimeWire'
 PREFIX = '/video/lmwtkiss'
@@ -30,6 +31,12 @@ def Start():
 
     VideoClipObject.art = R(ART)
 
+    Log.Debug('*' * 80)
+    Log.Debug('* Platform.OS            = %s' %Platform.OS)
+    Log.Debug('* Platform.OSVersion     = %s' %Platform.OSVersion)
+    Log.Debug('* Platform.ServerVersion = %s' %Platform.ServerVersion)
+    Log.Debug('*' * 80)
+
     HTTP.CacheTime = CACHE_1HOUR
     HTTP.Headers['User-Agent'] = (
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) '
@@ -43,9 +50,17 @@ def Start():
 @handler(PREFIX, TITLE, thumb=ICON, art=ART)
 def MainMenu():
 
-    oc = ObjectContainer(no_cache=True)
+    Log.Debug('*' * 80)
+    Log.Debug('* Client.Product         = %s' %Client.Product)
+    Log.Debug('* Client.Platform        = %s' %Client.Platform)
+    Log.Debug('* Client.Version         = %s' %Client.Version)
 
-    Updater(PREFIX + '/updater', oc)
+    admin = CheckAdmin()
+
+    oc = ObjectContainer(no_cache=admin)
+
+    if admin:
+        Updater(PREFIX + '/updater', oc)
 
     oc.add(DirectoryObject(
         key=Callback(Section, title='Movies', type='movies'), title='Movies', thumb=R(MOVIE_ICON)
@@ -60,7 +75,7 @@ def MainMenu():
 
     if Client.Product in DumbPrefs.clients:
         DumbPrefs(PREFIX, oc, title='Preferences', thumb=R('icon-prefs.png'))
-    elif AuthTools.Auth():
+    elif admin:
         oc.add(PrefsObject(title='Preferences'))
 
     if Client.Product in DumbKeyboard.clients:
@@ -201,6 +216,11 @@ def BookmarksSub(category):
             ))
 
     if len(oc) > 0:
+        oc.add(DirectoryObject(
+            key=Callback(UpdateBMCovers, category=category), title='Update Bookmark Covers',
+            summary='Some Cover URL\'s change over time, Use this to update covers to current URL',
+            thumb=R('icon-refresh.png')
+            ))
         return oc
     else:
         return MC.message_container('Bookmarks', '%s Bookmarks list Empty' %category)
@@ -424,7 +444,7 @@ def MediaVersions(url, title, thumb):
                 ))
 
     if len(oc) < 1:
-        return ObjectContainer(header='No Sources', message='No compatible sources found')
+        return MC.message_container('No Sources', 'No compatible sources found')
     else:
         return oc
 
@@ -471,3 +491,67 @@ def Search(query=''):
             ))
 
     return oc
+
+####################################################################################################
+@route(PREFIX + '/bookmarks/update/covers')
+def UpdateBMCovers(category):
+
+    bm = Dict['Bookmarks']
+    bookmark_list = []
+    for bookmark in sorted(bm[category], key=lambda k: k['title']):
+        title = bookmark['title']
+        thumb = bookmark['thumb']
+        url = bookmark['url']
+        category = bookmark['category']
+        item_id = bookmark['id']
+
+        bookmark_list.append(
+            {'id': item_id, 'title': title, 'url': url, 'thumb': thumb, 'category': category}
+            )
+
+    Thread.Create(update_bm_thumb, bookmark_list=bookmark_list)
+
+    return MC.message_container('Update Bookmark Covers',
+        '\"%s\" Bookmark covers will be updated' %category)
+
+####################################################################################################
+def update_bm_thumb(bookmark_list=list):
+
+    for nbm in bookmark_list:
+        category = nbm['category']
+        item_id = nbm['id']
+        item_url = nbm['url']
+
+        if not item_url.startswith('http'):
+            url = Dict['pw_site_url'] + item_url
+        else:
+            url = item_url
+
+        html = HTML.ElementFromURL(url)
+        Log.Debug('*' * 80)
+        Log.Debug('* Updating \"%s\" Bookmark Cover' %nbm['title'])
+        thumb = html.xpath('//meta[@property="og:image"]/@content')[0]
+        if not thumb.startswith('http'):
+            thumb = 'http:' + thumb
+
+        Log.Debug('* thumb = %s' %thumb)
+        nbm.update({'thumb': thumb})
+
+        # delete bm first so we can re-append it with new values
+        bm_c = Dict['Bookmarks'][category]
+        for i in xrange(len(bm_c)):
+            if bm_c[i]['id'] == item_id:
+                bm_c.pop(i)
+                Dict.Save()
+                break
+
+        # now append updatd bookmark to correct category
+        temp = {}
+        temp.setdefault(category, Dict['Bookmarks'][category]).append(nbm)
+        Dict['Bookmarks'][category] = temp[category]
+        Dict.Save()
+
+        timer = int(Util.RandomInt(2,5) + Util.Random())
+        sleep(timer)  # sleep (0-30) seconds inbetween cover updates
+
+    return
