@@ -1,10 +1,15 @@
 # ChangeLog
 
 ##### 1.0.5
-- _02/14/16_
-- Added new Auth check for preferences. Only plex server admin can edit prefs.
+- _02/25/16_
+- Added Refresh Bookmark Covers
+  - Some thumbs/covers change over time, this will allow for fresh thumbs to be pulled
 - Updated DumbPrefs, removed PHT
 - New Message system, handles PHT and OpenPHT
+- New Auth check for preferences and updater. Only plex server admin can edit prefs or update channel.
+  - Can Auth against PMS or Plex.tv
+  - Enable `Auth Admin through Plex.tv` if not Plex Home setup
+  - Refer to [Comment_1133884](https://forums.plex.tv/discussion/comment/1133884/#Comment_1133884), [Comment_1133922](https://forums.plex.tv/discussion/comment/1133922/#Comment_1133922), and [Comment_1134571](https://forums.plex.tv/discussion/comment/1134571/#Comment_1134571) for breakdown of admin authentication
 
 ##### 1.0.4
 - _01/23/16_
