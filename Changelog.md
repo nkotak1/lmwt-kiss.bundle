@@ -1,5 +1,9 @@
 # ChangeLog
 
+##### 1.0.6
+- _03/11/16_
+  - Fixed MediaVersion URL parse
+
 ##### 1.0.5
 - _02/25/16_
 - Added Refresh Bookmark Covers

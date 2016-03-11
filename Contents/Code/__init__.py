@@ -424,7 +424,7 @@ def MediaVersions(url, title, thumb):
 
     oc = ObjectContainer(title2=title)
 
-    for ext_url in html.xpath('//a[contains(@href, "/external.php?")]/@href'):
+    for ext_url in html.xpath('//a[contains(@href, "/goto.php?")]/@href'):
 
         url = ext_url.split('url=')[-1].split('&')[0]
         url = String.Base64Decode(url)
