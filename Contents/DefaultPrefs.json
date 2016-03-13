@@ -3,9 +3,19 @@
 		"id": "pw_site_url",
 		"type": "enum",
 		"label": "Site URL",
-		"values": [
-			"http://www.primewire.ag"
-		],
+		"values": ["http://www.primewire.ag", "http://www.primewire.is", "http://www.primewire.org", "http://primewire.filespook.com", "http://hdmovieas.org"],
 		"default": "http://www.primewire.ag"
+	},
+	{
+		"id": "custom_url",
+		"type": "bool",
+		"label": "Use Custom Site URL",
+		"default": "Flase"
+	},
+	{
+		"id": "pw_site_url_custom",
+		"type": "text",
+		"label": "Custom Site URL",
+		"default": ""
 	}
 ]
