@@ -10,7 +10,7 @@
     "id": "custom_url",
     "type": "bool",
     "label": "Use Custom Site URL",
-    "default": "Flase"
+    "default": "False"
   },
   {
     "id": "pw_site_url_custom",
