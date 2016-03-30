@@ -25,6 +25,13 @@
 				<string>^http:\/\/vidto\.me/.+</string>
 			</array>
 		</dict>
+		<key>Vidzi</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^vidzi:\/\/(www\.)?vidzi\.tv\/.+</string>
+			</array>
+		</dict>
 		<key>WholeCloud</key>
 		<dict>
 			<key>URLPatterns</key>
