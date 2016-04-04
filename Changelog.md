@@ -1,5 +1,11 @@
 # ChangeLog
 
+##### 1.0.7
+- _04/04/16_
+  - Added Vidzi.tv URL Service Code
+  - Added HLS support for Vidzi.tv streams
+  - Fixed typo in Prefs file
+
 ##### 1.0.6
 - _03/11/16_
   - Fixed MediaVersion URL parse
