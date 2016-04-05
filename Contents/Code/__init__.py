@@ -145,10 +145,11 @@ def bm_prefs_html(url):
         return (False, html)
     else:
         try:
-            html = HTML.ElementFromURL(url, cacheTime=0)
+            html = HTML.ElementFromURL(url)
             return (False, html)
         except:
-            Log.Debug(error_message())
+            HTTP.ClearCache()
+            Log.Error(error_message())
             return (True, MC.message_container('Error', error_message()))
 
 ####################################################################################################
@@ -257,17 +258,17 @@ def Media(title, rel_url, page=1, search=False):
     url = Dict['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
 
     if not Prefs['no_bm']:
-        if Dict['pw_site_url'] == Dict['pw_site_url_old']:
-            html = HTML.ElementFromURL(url)
-        else:
+        if Dict['pw_site_url'] != Dict['pw_site_url_old']:
             Dict['pw_site_url_old'] = Dict['pw_site_url']
             Dict.Save()
-            html = HTML.ElementFromURL(url, cacheTime=0)
+            HTTP.ClearCache()
+        html = HTML.ElementFromURL(url)
     else:
         try:
-            html = HTML.ElementFromURL(url, cacheTime=0)
+            html = HTML.ElementFromURL(url)
         except:
-            Log.Debug(error_message())
+            HTTP.ClearCache()
+            Log.Error(error_message())
             return MC.message_container('Error', error_message())
 
     oc = ObjectContainer(title2=title, no_cache=True)
