@@ -1,5 +1,10 @@
 # ChangeLog
 
+##### 1.0.8
+- _04/05/16_
+  - Fixed Bookmark caching error
+  - Improved URL Cache issue when _No Bookmarks_ pref selected
+
 ##### 1.0.7
 - _04/04/16_
   - Added Vidzi.tv URL Service Code
