@@ -183,12 +183,12 @@ def Media(title, rel_url, page=1, search=False):
 
 	url = Dict['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
 
-	if Dict['pw_site_url'] == Dict['pw_site_url_old']:
-		html = HTML.ElementFromURL(url)
-	else:
+	if Dict['pw_site_url'] != Dict['pw_site_url_old']:
 		Dict['pw_site_url_old'] = Dict['pw_site_url']
 		Dict.Save()
-		html = HTML.ElementFromURL(url, cacheTime=0)
+		HTTP.ClearCache()
+
+	html = HTML.ElementFromURL(url)
 
 	oc = ObjectContainer(title2=title, no_cache=True)
 
