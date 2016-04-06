@@ -16,7 +16,7 @@ TV_ICON = 'icon-tv.png'
 BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
 BOOKMARK_REMOVE_ICON = 'icon-remove-bookmark.png'
 
-BM = bookmarks.Bookmark(PREFIX, TITLE)
+BM = bookmarks.Bookmark(PREFIX, TITLE, BOOKMARK_ADD_ICON, BOOKMARK_REMOVE_ICON)
 MC = messages.NewMessageContainer(PREFIX, TITLE)
 
 ####################################################################################################
