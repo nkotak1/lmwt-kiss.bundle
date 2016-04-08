@@ -1,5 +1,10 @@
 # ChangeLog
 
+##### 1.0.9
+- _04/08/16_
+  - Fixed Bookmark class error
+  - Moved Unpacker code to shared code, can now be used with future service codes
+
 ##### 1.0.8
 - _04/05/16_
   - Fixed Bookmark caching error

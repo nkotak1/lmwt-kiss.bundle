@@ -6,7 +6,7 @@
 
 class Bookmark(object):
 
-    def __init__(self, title, prefix, bm_add_icon=None, bm_rm_icon=None):
+    def __init__(self, prefix, title, bm_add_icon=None, bm_rm_icon=None):
         self.title = title
         self.prefix = prefix
         self.bm_add_icon = bm_add_icon
