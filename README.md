@@ -13,7 +13,7 @@ This is a plugin that creates a new channel in [Plex Media Server](https://plex.
 - Custom Bookmarks
 - Custom Site URL
 - Search for TV or Movies
-- Update Channel Internally
+- ~~Update Channel Internally~~ _(functionality disabled due to instability)_
 
 ## Install
 
