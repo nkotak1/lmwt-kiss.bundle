@@ -1,5 +1,10 @@
 # ChangeLog
 
+##### 1.1.0
+- _05/10/16_
+  - Fixed Vidzi Chromecast error, had to remove hls support
+  - Added new valid site URL
+
 ##### 1.0.9
 - _04/08/16_
   - Fixed Bookmark class error
