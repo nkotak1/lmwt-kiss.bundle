@@ -45,24 +45,18 @@ def MediaObjectsForURL(url):
 
     return [
         MediaObject(
-            video_resolution = 'sd',
-            audio_channels = 2,
-            optimized_for_streaming = False,
-            parts = [
-                PartObject(key=Callback(PlayVideo, url=url, mp4=True))
-            ]
-        ),
-        MediaObject(
-            video_resolution = 'sd',
-            parts = [
-                PartObject(key=HTTPLiveStreamURL(Callback(PlayVideo, url=url, mp4=False)))
-            ]
-        )
-    ]
+            video_resolution='sd',
+            audio_channels=2,
+            optimized_for_streaming=False,
+            parts=[
+                PartObject(key=Callback(PlayVideo, url=url))
+                ]
+            )
+        ]
 
 ####################################################################################################
 @indirect
-def PlayVideo(url, mp4, **kwargs):
+def PlayVideo(url, **kwargs):
 
     # Trick to use the bundled Vidzi ULR Service
     url = url.replace('vidzi://', 'http://')
@@ -71,20 +65,9 @@ def PlayVideo(url, mp4, **kwargs):
     data = Regex("<script type=.text\/javascript.>(eval\(function\(p,a,c,k,e,.+\.split\('\|'\)\)\))").search(page)
 
     if data:
-
         data = Unpack(data.group(1))
-        if mp4:
-            file = Regex('file:"([^"]+\.mp4)"').search(data)
-            if file:
-                file = file.group(1)
-        else:
-            file = Regex('file:"([^"]+\.m3u8.*?)"').search(data)
-            if file:
-                file = file.group(1)
-                if not file.endswith('m3u8'):
-                    file = file.split('.m3u8')[0]+'.m3u8'
-
+        file = Regex('file:"([^"]+\.mp4)"').search(data)
         if file:
-            return IndirectResponse(VideoClipObject, key=file)
+            return IndirectResponse(VideoClipObject, key=file.group(1))
 
     raise Ex.MediaNotAvailable

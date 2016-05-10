@@ -3,7 +3,10 @@
     "id": "pw_site_url",
     "type": "enum",
     "label": "Site URL",
-    "values": ["http://www.primewire.ag", "http://www.primewire.is", "http://www.primewire.org", "http://primewire.filespook.com", "http://hdmovieas.org"],
+    "values": [
+      "http://www.primewire.ag", "http://www.primewire.is", "http://www.primewire.org",
+      "http://primewire.filespook.com", "http://hdmovieas.org", "http://primeware.win"
+      ],
     "default": "http://www.primewire.ag"
   },
   {
