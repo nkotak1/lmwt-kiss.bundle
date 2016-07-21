@@ -13,10 +13,11 @@ This is a plugin that creates a new channel in [Plex Media Server](https://plex.
 - Custom Bookmarks
 - Custom Site URL
 - Search for TV or Movies
-- ~~Update Channel Internally~~ _(functionality disabled due to instability)_
+- Update Channel via [WebTools](https://github.com/dagalufh/WebTools.bundle)' UASv2 _(if previously installed via UASv2)_
 
 ## Install
 
+- Install via [WebTools.bundle](https://github.com/dagalufh/WebTools.bundle) or follow directions below.
 - [Download](https://github.com/piplongrun/lmwt-kiss.bundle/archive/master.zip) and install it by following the Plex [instructions](https://support.plex.tv/hc/en-us/articles/201187656-How-do-I-manually-install-a-channel-) or the instructions below.
   - Unzip and rename the folder to "lmwt-kiss.bundle"
   - Copy "lmwt-kiss.bundle" into the PMS [Plug-ins](https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-the-Plug-Ins-folder-) directory
