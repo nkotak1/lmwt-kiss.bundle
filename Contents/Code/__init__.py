@@ -286,9 +286,9 @@ def MediaSubPage(title, thumb, item_url, item_id, category=None):
 	else:
 		url = item_url
 
+	html = None
 	if not category:
 		html = HTML.ElementFromURL(url)
-
 		category = 'TV Shows' if html.xpath('//div[@class="tv_container"]') else 'Movies'
 
 	if category == 'TV Shows':
@@ -303,6 +303,12 @@ def MediaSubPage(title, thumb, item_url, item_id, category=None):
 			title=title,
 			thumb=thumb
 			))
+
+		if not html:
+			html = HTML.ElementFromURL(url)
+		trailer = html.xpath('//div[@data-id="trailer"]/iframe/@src')
+		if trailer and (URLService.ServiceIdentifierForURL(trailer[0]) is not None):
+			oc.add(URLService.MetadataObjectForURL(trailer[0]))
 
 	bm = Dict['Bookmarks']
 
