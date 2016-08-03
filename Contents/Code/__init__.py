@@ -1,20 +1,31 @@
-from time import sleep
 from DumbTools import DumbKeyboard
 from DumbTools import DumbPrefs
 
 TITLE = 'PrimeWire'
 PREFIX = '/video/lmwtkiss'
 
+ART = 'art-default.jpg'
 MOVIE_ICON = 'icon-movie.png'
 TV_ICON = 'icon-tv.png'
 BOOKMARK_ADD_ICON = 'icon-add-bookmark.png'
 BOOKMARK_REMOVE_ICON = 'icon-remove-bookmark.png'
+
+REL_URL = 'index.php?%ssort=%s&genre=%s'
+SORT_LIST = (
+	('date', 'Date Added'), ('views', 'Popular'), ('ratings', 'Ratings'),
+	('favorites', 'Favorites'), ('release', 'Release Date'), ('alphabet', 'Alphabet'),
+	('featured', 'Featured')
+	)
 
 ####################################################################################################
 def Start():
 
 	ObjectContainer.title1 = TITLE
 	DirectoryObject.thumb = R('icon-default.png')
+	DirectoryObject.art = R(ART)
+	InputDirectoryObject.art = R(ART)
+	VideoClipObject.art = R(ART)
+
 	HTTP.CacheTime = CACHE_1HOUR
 	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36'
 
@@ -154,25 +165,59 @@ def BookmarksSub(category):
 
 ####################################################################################################
 @route(PREFIX + '/section')
-def Section(title, type='movies'):
+def Section(title, type='movies', genre=None):
 
 	if DomainTest() != False:
 		return DomainTest()
 
-	if type == 'tv':
-		rel_url = 'index.php?tv=&sort=%s'
-	else:
-		rel_url = 'index.php?sort=%s'
-
 	oc = ObjectContainer(title2=title)
 
-	oc.add(DirectoryObject(key=Callback(Media, title='Popular', rel_url=rel_url % ('views')), title='Popular'))
-	oc.add(DirectoryObject(key=Callback(Media, title='Featured', rel_url=rel_url % ('featured')), title='Featured'))
-	oc.add(DirectoryObject(key=Callback(Media, title='Highly Rated', rel_url=rel_url % ('ratings')), title='Highly Rated'))
-	oc.add(DirectoryObject(key=Callback(Media, title='Recently Added', rel_url=rel_url % ('date')), title='Recently Added'))
-	oc.add(DirectoryObject(key=Callback(Media, title='Latest Releases', rel_url=rel_url % ('release')), title='Latest Releases'))
+	if not genre:
+		oc.add(DirectoryObject(key=Callback(Genres, title='Genres', type=type), title='Genres'))
+
+	section = 'tv=&' if type == 'tv' else ''
+	genre = genre if genre else ''
+	for s, t in SORT_LIST:
+		rel_url = REL_URL %(section, s, genre)
+		oc.add(DirectoryObject(key=Callback(Media, title=t, rel_url=rel_url), title=t))
 
 	return oc
+
+####################################################################################################
+@route(PREFIX + '/genres')
+def Genres(title, type):
+	if DomainTest() != False:
+		return DomainTest()
+
+	section = 'tv=&' if type == 'tv' else ''
+	rel_url = 'index.php?%s' %section
+	html, url = html_from_url(rel_url, 1)
+
+	oc = ObjectContainer(title2=title)
+	g_list = list()
+	for g in html.xpath('//a[contains(@href, "%sgenre=")]' %section.replace('=', '')):
+		genre = g.get('href').split('=')[-1]
+		gtitle = g.text.strip()
+		if (gtitle, genre) not in g_list:
+			g_list.append((gtitle, genre))
+
+	for t, g in sorted(g_list):
+		oc.add(DirectoryObject(key=Callback(Section, title=t, type=type, genre=g), title=t))
+
+	return oc
+
+####################################################################################################
+def html_from_url(rel_url, page=int):
+	t = '' if (rel_url.endswith('&') or rel_url.endswith('?')) else '&'
+	url = Dict['pw_site_url'] + '/%s%spage=%i' %(rel_url, t, page)
+
+	if Dict['pw_site_url'] != Dict['pw_site_url_old']:
+		Dict['pw_site_url_old'] = Dict['pw_site_url']
+		Dict.Save()
+		HTTP.ClearCache()
+
+	html = HTML.ElementFromURL(url)
+	return (html, url)
 
 ####################################################################################################
 @route(PREFIX + '/media', page=int, search=bool)
@@ -181,14 +226,7 @@ def Media(title, rel_url, page=1, search=False):
 	if DomainTest() != False:
 		return DomainTest()
 
-	url = Dict['pw_site_url'] + '/%s&page=%i' %(rel_url, page)
-
-	if Dict['pw_site_url'] != Dict['pw_site_url_old']:
-		Dict['pw_site_url_old'] = Dict['pw_site_url']
-		Dict.Save()
-		HTTP.ClearCache()
-
-	html = HTML.ElementFromURL(url)
+	html, url = html_from_url(rel_url, page)
 
 	oc = ObjectContainer(title2=title, no_cache=True)
 
@@ -205,9 +243,9 @@ def Media(title, rel_url, page=1, search=False):
 			item_thumb = 'http://%s%s' % (url.split('/')[2], item_thumb)
 
 		oc.add(DirectoryObject(
-			key = Callback(MediaSubPage, item_url=item_url, title=item_title, thumb=item_thumb, item_id=item_id),
-			title = item_title,
-			thumb = item_thumb
+			key=Callback(MediaSubPage, item_url=item_url, title=item_title, thumb=item_thumb, item_id=item_id),
+			title=item_title,
+			thumb=item_thumb
 			))
 
 	next_check = html.xpath('//div[@class="pagination"]/a[last()]/@href')
@@ -219,18 +257,16 @@ def Media(title, rel_url, page=1, search=False):
 		if int(next_check) > page:
 
 			oc.add(NextPageObject(
-				key = Callback(Media, title=title, rel_url=rel_url, page=page+1),
-				title = 'More...'
+				key=Callback(Media, title=title, rel_url=rel_url, page=page+1),
+				title='More...'
 				))
 
 	if len(oc) > 0:
 		return oc
 	elif search:
-		return MessageContainer('Search',
-			'No Search results for \"%s\"' %title)
+		return MessageContainer('Search', 'No Search results for \"%s\"' %title)
 	else:
-		return MessageContainer('Error',
-			'No media for \"%s\"' %title)
+		return MessageContainer('Error', 'No media for \"%s\"' %title)
 
 ####################################################################################################
 @route(PREFIX + '/media/subpage')
@@ -250,23 +286,29 @@ def MediaSubPage(title, thumb, item_url, item_id, category=None):
 	else:
 		url = item_url
 
+	html = None
 	if not category:
 		html = HTML.ElementFromURL(url)
-
 		category = 'TV Shows' if html.xpath('//div[@class="tv_container"]') else 'Movies'
 
 	if category == 'TV Shows':
 		oc.add(DirectoryObject(
-			key = Callback(MediaSeasons, url=url, title=title, thumb=thumb),
-			title = title,
-			thumb = thumb
+			key=Callback(MediaSeasons, url=url, title=title, thumb=thumb),
+			title=title,
+			thumb=thumb
 			))
 	else:
 		oc.add(DirectoryObject(
-			key = Callback(MediaVersions, url=url, title=title, thumb=thumb),
-			title = title,
-			thumb = thumb
+			key=Callback(MediaVersions, url=url, title=title, thumb=thumb),
+			title=title,
+			thumb=thumb
 			))
+
+		if not html:
+			html = HTML.ElementFromURL(url)
+		trailer = html.xpath('//div[@data-id="trailer"]/iframe/@src')
+		if trailer and (URLService.ServiceIdentifierForURL(trailer[0]) is not None):
+			oc.add(URLService.MetadataObjectForURL(trailer[0]))
 
 	bm = Dict['Bookmarks']
 
@@ -301,9 +343,9 @@ def MediaSeasons(url, title, thumb):
 	for season in html.xpath('//div[@class="tv_container"]//a[@data-id]/@data-id'):
 
 		oc.add(DirectoryObject(
-			key = Callback(MediaEpisodes, url=url, title='Season %s' % (season), thumb=thumb),
-			title = 'Season %s' % (season),
-			thumb = thumb
+			key=Callback(MediaEpisodes, url=url, title='Season %s' % (season), thumb=thumb),
+			title='Season %s' % (season),
+			thumb=thumb
 			))
 
 	return oc
@@ -321,17 +363,19 @@ def MediaEpisodes(url, title, thumb):
 
 	for item in html.xpath('//div[@data-id="%s"]//a[contains(@href, "/tv-")]' % (title.split(' ')[-1])):
 
-		item_title = '%s %s' % (item.xpath('.//text()')[0].strip(), item.xpath('.//text()')[1].strip().replace('â€™', "'"))
+		item_title = '%s %s' % (item.xpath('.//text()')[0].strip(), item.xpath('.//text()')[1].strip().decode('ascii', 'ignore'))
 
 		if '0 links' in item_title.lower():
+			continue
+		if int(Regex(r'(\d+)').search(item.xpath('.//span[@class="tv_num_versions"]/text()')[0]).group(1)) == 0:
 			continue
 
 		item_url = item.xpath('./@href')[0]
 
 		oc.add(DirectoryObject(
-			key = Callback(MediaVersions, url=item_url, title=item_title, thumb=thumb),
-			title = item_title,
-			thumb = thumb
+			key=Callback(MediaVersions, url=item_url, title=item_title, thumb=thumb),
+			title=item_title,
+			thumb=thumb
 			))
 
 	return oc
@@ -346,37 +390,36 @@ def MediaVersions(url, title, thumb):
 		url = Dict['pw_site_url'] + url
 
 	html = HTML.ElementFromURL(url)
-	summary = html.xpath('//meta[@name="description"]/@content')[0].split(' online - ', 1)[-1].split('. Download ')[0]
 
 	oc = ObjectContainer(title2=title)
 
-	for ext_url in html.xpath('//a[contains(@href, "/goto.php?")]/@href'):
-
-		url = ext_url.split('url=')[-1].split('&')[0]
-		url = String.Base64Decode(url)
-
-		if url.split('/')[2].replace('www.', '') in ['youtube.com']:
+	summary = html.xpath('//meta[@name="description"]/@content')[0].split(' online - ', 1)[-1].split('. Download ')[0]
+	for ext_url in html.xpath('//a[contains(@href, "/goto.php?")  and contains(@href, "url=")]/@href'):
+		hurl = String.Base64Decode(ext_url.split('url=')[-1].split('&')[0])
+		if hurl.split('/')[2].replace('www.', '') in ['youtube.com']:
 			continue
 
 		# Trick to use the bundled Vidzi URL Service
 		if 'vidzi.tv' in url:
-			url = url.replace('http://', 'vidzi://')
+			hurl = hurl.replace('http://', 'vidzi://')
 
-		if URLService.ServiceIdentifierForURL(url) is not None:
-
-			host = url.split('/')[2].replace('www.', '')
+		if URLService.ServiceIdentifierForURL(hurl) is not None:
+			host = Regex(r'https?\:\/\/([^\/]+)').search(hurl).group(1).replace('www.', '')
 
 			oc.add(DirectoryObject(
-				key = Callback(MediaPlayback, url=url, title=title),
-				title = '%s - %s' % (host, title),
-				summary = summary,
-				thumb = thumb
+				key=Callback(MediaPlayback, url=hurl, title=title),
+				title='%s - %s' % (host, title),
+				summary=summary,
+				thumb=thumb
 				))
 
-	if len(oc) < 1:
-		return ObjectContainer(header='No Sources', message='No compatible sources found')
-	else:
+	if len(oc) != 0:
 		return oc
+	elif html.xpath('//a[starts-with(@href, "/mysettings")]'):
+		Log('* this is an adult restricted page = %s' %url)
+		return MessageContainer('Warning', 'Adult Content Blocked')
+
+	return MessageContainer('No Sources', 'No compatible sources found')
 
 ####################################################################################################
 @route(PREFIX + '/media/playback')
@@ -393,7 +436,11 @@ def MediaPlayback(url, title):
 	Log.Debug('*' * 80)
 
 	oc = ObjectContainer(title2=title)
-	oc.add(URLService.MetadataObjectForURL(url))
+	try:
+		oc.add(URLService.MetadataObjectForURL(url))
+	except Exception as e:
+		Log.Error(str(e))
+		return MessageContainer('Warning', 'This media may have expired.')
 
 	return oc
 
@@ -556,6 +603,6 @@ def update_bm_thumb(bookmark_list=list):
 		Dict.Save()
 
 		timer = int(Util.RandomInt(2,5) + Util.Random())
-		sleep(timer)  # sleep (0-30) seconds inbetween cover updates
+		Thread.Sleep(timer)  # sleep (0-30) seconds inbetween cover updates
 
 	return
