@@ -84,8 +84,8 @@ def DomainTest():
 	"""Setup MessageContainer if Dict[\'domain_test\'] failed"""
 
 	if Dict['domain_test'] == 'Fail':
-		return MessageContainer('Error',
-			'%s is NOT a Valid Site URL for this channel.  Please pick a different Site URL.' %Dict['pw_site_url'])
+		return ObjectContainer(header='Error',
+			message='%s is NOT a Valid Site URL for this channel.  Please pick a different Site URL.' %Dict['pw_site_url'])
 	else:
 		return False
 
@@ -102,7 +102,7 @@ def BookmarksMain():
 	if DomainTest() != False:
 		return DomainTest()
 	elif not bm:
-		return MessageContainer('Bookmarks', 'Bookmarks list Empty')
+		return ObjectContainer(header='Bookmarks', message='Bookmarks list Empty')
 
 	oc = ObjectContainer(title2='My Bookmarks', no_cache=True)
 
@@ -124,7 +124,7 @@ def BookmarksMain():
 	if len(oc) > 0:
 		return oc
 	else:
-		return MessageContainer('Bookmarks', 'Bookmark list Empty')
+		return ObjectContainer(header='Bookmarks', message='Bookmark list Empty')
 
 ####################################################################################################
 @route(PREFIX + '/bookmarkssub')
@@ -136,8 +136,8 @@ def BookmarksSub(category):
 	if DomainTest() != False:
 		return DomainTest()
 	elif not category in bm.keys():
-		return MessageContainer('Error',
-			'%s Bookmarks list is dirty, or no %s Bookmark list exist.' %(category, category))
+		return ObjectContainer(header='Error',
+			message='%s Bookmarks list is dirty, or no %s Bookmark list exist.' %(category, category))
 
 	oc = ObjectContainer(title2='My Bookmarks | %s' %category, no_cache=True)
 
@@ -161,7 +161,7 @@ def BookmarksSub(category):
 			))
 		return oc
 	else:
-		return MessageContainer('Bookmarks', '%s Bookmarks list Empty' %category)
+		return ObjectContainer(header='Bookmarks', message='%s Bookmarks list Empty' %category)
 
 ####################################################################################################
 @route(PREFIX + '/section')
@@ -264,9 +264,9 @@ def Media(title, rel_url, page=1, search=False):
 	if len(oc) > 0:
 		return oc
 	elif search:
-		return MessageContainer('Search', 'No Search results for \"%s\"' %title)
+		return ObjectContainer(header='Search', message='No Search results for \"%s\"' %title)
 	else:
-		return MessageContainer('Error', 'No media for \"%s\"' %title)
+		return ObjectContainer(header='Error', message='No media for \"%s\"' %title)
 
 ####################################################################################################
 @route(PREFIX + '/media/subpage')
@@ -417,9 +417,9 @@ def MediaVersions(url, title, thumb):
 		return oc
 	elif html.xpath('//a[starts-with(@href, "/mysettings")]'):
 		Log('* this is an adult restricted page = %s' %url)
-		return MessageContainer('Warning', 'Adult Content Blocked')
+		return ObjectContainer(header='Warning', message='Adult Content Blocked')
 
-	return MessageContainer('No Sources', 'No compatible sources found')
+	return ObjectContainer(header='No Sources', message='No compatible sources found')
 
 ####################################################################################################
 @route(PREFIX + '/media/playback')
@@ -440,7 +440,7 @@ def MediaPlayback(url, title):
 		oc.add(URLService.MetadataObjectForURL(url))
 	except Exception as e:
 		Log.Error(str(e))
-		return MessageContainer('Warning', 'This media may have expired.')
+		return ObjectContainer(header='Warning', message='This media may have expired.')
 
 	return oc
 
@@ -484,27 +484,27 @@ def AddBookmark(title, url, thumb, category, item_id):
 		Dict['Bookmarks'] = {category: [new_bookmark]}
 		Dict.Save()
 
-		return MessageContainer('Bookmarks',
-			'\"%s\" has been added to your bookmarks.' %title)
+		return ObjectContainer(header='Bookmarks',
+			message='\"%s\" has been added to your bookmarks.' %title)
 	elif category in bm.keys():
 		if (True if [b['id'] for b in bm[category] if b['id'] == item_id] else False):
 
-			return MessageContainer('Warning',
-				'\"%s\" is already in your \"%s\" bookmark list.' %(title, category))
+			return ObjectContainer(header='Warning',
+				message='\"%s\" is already in your \"%s\" bookmark list.' %(title, category))
 		else:
 			temp = {}
 			temp.setdefault(category, bm[category]).append(new_bookmark)
 			Dict['Bookmarks'][category] = temp[category]
 			Dict.Save()
 
-			return MessageContainer('Bookmarks',
-				'\"%s\" added to your \"%s\" bookmark list.' %(title, category))
+			return ObjectContainer(header='Bookmarks',
+				message='\"%s\" added to your \"%s\" bookmark list.' %(title, category))
 	else:
 		Dict['Bookmarks'].update({category: [new_bookmark]})
 		Dict.Save()
 
-		return MessageContainer('Bookmarks',
-			'\"%s\" added to your \"%s\" bookmark list.' %(title, category))
+		return ObjectContainer(header='Bookmarks',
+			message='\"%s\" added to your \"%s\" bookmark list.' %(title, category))
 
 ####################################################################################################
 @route(PREFIX + '/bookmark/remove')
@@ -529,11 +529,11 @@ def RemoveBookmark(title, item_id, category):
 			del bm_c
 			Dict.Save()
 
-			return MessageContainer('Remove Bookmark',
-				'\"%s\" bookmark was the last, so removed \"%s\" bookmark section' %(title, category))
+			return ObjectContainer(header='Remove Bookmark',
+				message='\"%s\" bookmark was the last, so removed \"%s\" bookmark section' %(title, category))
 		else:
-			return MessageContainer('Remove Bookmark',
-				'\"%s\" removed from your \"%s\" bookmark list.' %(title, category))
+			return ObjectContainer(header='Remove Bookmark',
+				message='\"%s\" removed from your \"%s\" bookmark list.' %(title, category))
 
 ####################################################################################################
 @route(PREFIX + '/bookmark/update/covers')
@@ -558,8 +558,8 @@ def UpdateBMCovers(category):
 
 	Thread.Create(update_bm_thumb, bookmark_list=bookmark_list)
 
-	return MessageContainer('Update Bookmark Covers',
-		'\"%s\" Bookmark covers will be updated' %category)
+	return ObjectContainer(header='Update Bookmark Covers',
+		message='\"%s\" Bookmark covers will be updated' %category)
 
 ####################################################################################################
 def update_bm_thumb(bookmark_list=list):
