@@ -25,6 +25,6 @@ This is a plugin that creates a new channel in [Plex Media Server](https://plex.
 
 ## Issues
 
-- Currently there are many PrieWire sites, but not all of them are structured the same.
+- Currently there are many PrimeWire sites, but not all of them are structured the same.
 - Current URL test is `Domain + '/watch-2741621-Brooklyn-Nine-Nine'`
   - Example: `http://www.primewire.ag/watch-2741621-Brooklyn-Nine-Nine`
