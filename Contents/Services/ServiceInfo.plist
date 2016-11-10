@@ -32,13 +32,11 @@
 				<string>^vidzi:\/\/(www\.)?vidzi\.tv\/.+</string>
 			</array>
 		</dict>
-		<key>WholeCloud</key>
+		<key>AuroraVid</key>
 		<dict>
 			<key>URLPatterns</key>
 			<array>
-				<string>^http:\/\/www\.wholecloud\.net\/video\/[a-f0-9]+</string>
 				<string>^http:\/\/www\.auroravid\.to\/video\/[a-f0-9]+</string>
-				<string>^http:\/\/www\.movshare\.net\/video\/[a-f0-9]+</string>
 				<string>^http:\/\/www\.novamov\.com\/video\/[a-f0-9]+</string>
 			</array>
 		</dict>
