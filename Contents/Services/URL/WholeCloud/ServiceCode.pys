@@ -52,12 +52,11 @@ def PlayVideo(url):
 	time.sleep(1)
 
 	page = HTTP.Request(url, values=post_values, method='POST').content
+	html = HTML.ElementFromString(page)
 
-	host = url.split('/')[2]
-	filekey = Regex('flashvars\.filekey="([^"]+)";').search(page).group(1)
-	file = Regex('flashvars\.file="([^"]+)";').search(page).group(1)
+	src = html.xpath('//source[contains(@src, ".mp4")]/@src')
 
-	data = HTTP.Request('http://%s/api/player.api.php?key=%s&file=%s' % (host, filekey, file)).content
-	video_url = data.split('url=')[1].split('&')[0]
+	if len(src) > 0:
+		return IndirectResponse(VideoClipObject, key=src[0])
 
-	return IndirectResponse(VideoClipObject, key=video_url)
+	raise Ex.MediaNotAvailable
