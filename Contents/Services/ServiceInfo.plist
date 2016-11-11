@@ -4,6 +4,21 @@
 <dict>
 	<key>URL</key>
 	<dict>
+		<key>AuroraVid</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^http:\/\/www\.auroravid\.to\/video\/[a-f0-9]+</string>
+				<string>^http:\/\/www\.novamov\.com\/video\/[a-f0-9]+</string>
+			</array>
+		</dict>
+		<key>PLAYEDTO</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^http:\/\/playedto\.me/.+</string>
+			</array>
+		</dict>
 		<key>Stagevu</key>
 		<dict>
 			<key>URLPatterns</key>
@@ -25,19 +40,18 @@
 				<string>^http:\/\/vidto\.me/.+</string>
 			</array>
 		</dict>
+		<key>VidToDo</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^http:\/\/vidtodo\.com/.+</string>
+			</array>
+		</dict>
 		<key>Vidzi</key>
 		<dict>
 			<key>URLPatterns</key>
 			<array>
 				<string>^vidzi:\/\/(www\.)?vidzi\.tv\/.+</string>
-			</array>
-		</dict>
-		<key>AuroraVid</key>
-		<dict>
-			<key>URLPatterns</key>
-			<array>
-				<string>^http:\/\/www\.auroravid\.to\/video\/[a-f0-9]+</string>
-				<string>^http:\/\/www\.novamov\.com\/video\/[a-f0-9]+</string>
 			</array>
 		</dict>
 	</dict>
