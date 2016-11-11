@@ -12,6 +12,13 @@
 				<string>^http:\/\/www\.novamov\.com\/video\/[a-f0-9]+</string>
 			</array>
 		</dict>
+		<key>eStream</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^https?:\/\/estream\.to\/.+</string>
+			</array>
+		</dict>
 		<key>PLAYEDTO</key>
 		<dict>
 			<key>URLPatterns</key>
