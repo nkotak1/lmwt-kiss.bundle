@@ -3,10 +3,7 @@
 ####################################################################################################
 def NormalizeURL(url):
 
-	url =  url.split('?')[0]
-	url = url.replace('novamov.com', 'auroravid.to')
-
-	return url
+	return url.split('?')[0]
 
 ####################################################################################################
 def MetadataObjectForURL(url):
