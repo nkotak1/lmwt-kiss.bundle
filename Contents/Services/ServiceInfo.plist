@@ -26,6 +26,13 @@
 				<string>^http:\/\/playedto\.me/.+</string>
 			</array>
 		</dict>
+		<key>NowVideo</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^http:\/\/www\.nowvideo\.sx\/video\/.+</string>
+			</array>
+		</dict>
 		<key>Stagevu</key>
 		<dict>
 			<key>URLPatterns</key>
