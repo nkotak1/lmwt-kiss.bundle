@@ -1,19 +1,22 @@
 # Vidto
 #
-import time
 ####################################################################################################
 def NormalizeURL(url):
 
-	return url.split('?')[0]
+	return 'http://vidto.me/embed-%s.html' % (url.split('vidto.me/')[-1].split('.html')[0])
 
 ####################################################################################################
 def MetadataObjectForURL(url):
 
-	html = HTML.ElementFromURL(url)
-	title = html.xpath('//h2[@class="video-page-head"]/text()')[0].strip()
+	page = HTTP.Request(url, cacheTime=30).content
+	data = Regex("<script type=.text\/javascript.>(eval\(function\(p,a,c,k,e,.+\.split\('\|'\)\)\))").search(page)
+	data = unpack(data.group(1))
+
+	thumb_url = Regex("image:.*(http://.+?\.jpg)").search(data).group(1)
 
 	return VideoClipObject(
-		title = title
+		title = 'Video',
+		thumb = thumb_url
 	)
 
 ####################################################################################################
@@ -34,29 +37,13 @@ def MediaObjectsForURL(url):
 @indirect
 def PlayVideo(url):
 
-	html = HTML.ElementFromURL(url)
-	post_values = {}
-
-	for item in html.xpath('//form[@method="POST"]/input'):
-
-		name = item.get('name')
-		value = item.get('value')
-		post_values[name] = value
-
-	time.sleep(6)
-
-	page = HTTP.Request(url, values=post_values, method='POST').content
+	page = HTTP.Request(url, cacheTime=30).content
 	data = Regex("<script type=.text\/javascript.>(eval\(function\(p,a,c,k,e,.+\.split\('\|'\)\)\))").search(page)
+	data = unpack(data.group(1))
 
-	if data:
+	video_url = Regex('file:"([^"]+\.mp4)"').findall(data)
 
-		data = unpack(data.group(1))
-		file = Regex('file:"([^"]+\.mp4)"').search(data)
-
-		if file:
-			return IndirectResponse(VideoClipObject, key=file.group(1))
-
-	raise Ex.MediaNotAvailable
+	return IndirectResponse(VideoClipObject, key=video_url[-1])
 
 
 ####################################################################################################
