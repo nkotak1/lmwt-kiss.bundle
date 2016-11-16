@@ -61,6 +61,13 @@
 				<string>^http:\/\/vidtodo\.com/.+</string>
 			</array>
 		</dict>
+		<key>VidUP</key>
+		<dict>
+			<key>URLPatterns</key>
+			<array>
+				<string>^http:\/\/vidup\.me/.+</string>
+			</array>
+		</dict>
 		<key>Vidzi</key>
 		<dict>
 			<key>URLPatterns</key>
