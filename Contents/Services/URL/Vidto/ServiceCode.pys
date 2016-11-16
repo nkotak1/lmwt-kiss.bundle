@@ -3,7 +3,10 @@
 ####################################################################################################
 def NormalizeURL(url):
 
-	return 'http://vidto.me/embed-%s.html' % (url.split('vidto.me/')[-1].split('.html')[0])
+	if not '/embed-' in url:
+		return 'http://vidto.me/embed-%s.html' % (url.split('vidto.me/')[-1].split('.html')[0])
+	else:
+		return url
 
 ####################################################################################################
 def MetadataObjectForURL(url):
