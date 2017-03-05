@@ -4,11 +4,11 @@
 		"type": "enum",
 		"label": "Site URL",
 		"values": [
-			"http://www.primewire.ag", "http://www.primewire.is", "http://www.primewire.org",
-			"http://www.primewire.co", "http://primewire.filespook.com",
-			"http://www.mprimewire.com", "http://primeware.racing"
+			"http://www.primewire.ch", 
+			"http://www.mprimewire.com", "http://www.primewire.sh", 
+			"http://www.primewire.io"
 			],
-		"default": "http://www.primewire.ag"
+		"default": "http://www.primewire.ch"
 	},
 	{
 		"id": "custom_url",
