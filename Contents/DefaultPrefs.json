@@ -4,11 +4,11 @@
 		"type": "enum",
 		"label": "Site URL",
 		"values": [
-			"http://www.primewire.ch", 
-			"http://www.mprimewire.com", "http://www.primewire.sh", 
-			"http://www.primewire.io"
+			"http://www.primewire.ch", "http://www.primewire.sh", 
+			"http://www.primewire.io", "https://primewire.unblocked.bet", "http://primewire.ag", 
+			"http://primewire.org", "http://primewire.is"
 			],
-		"default": "http://www.primewire.ch"
+		"default": "https://primewire.unblocked.bet"
 	},
 	{
 		"id": "custom_url",
