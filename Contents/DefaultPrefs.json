@@ -5,9 +5,10 @@
     "label": "Site URL",
     "values": [
       "http://www.primewire.ag", "http://www.primewire.is", "http://www.primewire.org",
-      "http://primewire.filespook.com", "http://hdmovieas.org", "http://primeware.win"
+      "http://www.primewire.ch", "http://hdmovieas.org", "http://primeware.win", "http://www.primewire.sh",
+      "https://primewire.unblocked.bet", 
       ],
-    "default": "http://www.primewire.ag"
+    "default": "http://www.primewire.org"
   },
   {
     "id": "custom_url",
