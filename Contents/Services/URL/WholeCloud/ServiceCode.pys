@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+"""WholeCloud Service Code"""
+
+from time import sleep
+
+####################################################################################################
+def NormalizeURL(url):
+
+   url =  url.split('?')[0]
+   url = url.replace('movshare.net', 'wholecloud.net').replace('novamov.com', 'auroravid.to')
+
+   return url
+
+####################################################################################################
+def MetadataObjectForURL(url):
+
+   html = HTML.ElementFromURL(url)
+
+   title = html.xpath('//meta[@property="og:title"]/@content')[0].split('Watch ')[-1].split(' online ')[0]
+   thumb = html.xpath('//meta[@property="og:image"]/@content')[0]
+
+   return VideoClipObject(
+      title = title,
+      thumb = thumb
+   )
+
+####################################################################################################
+def MediaObjectsForURL(url):
+
+   return [
+      MediaObject(
+         video_resolution = 'sd',
+         audio_channels = 2,
+         optimized_for_streaming = False,
+         parts = [
+            PartObject(key=Callback(PlayVideo, url=url))
+         ]
+      )
+   ]
+
+####################################################################################################
+@indirect
+def PlayVideo(url):
+
+   html = HTML.ElementFromURL(url)
+   post_values = {}
+
+   for item in html.xpath('//form[@method="post"]/input'):
+
+      name = item.get('name')
+      value = item.get('value')
+      post_values[name] = value
+
+   sleep(1)
+
+   page = HTTP.Request(url, values=post_values, method='POST').content
+
+   host = url.split('/')[2]
+   filekey = Regex('flashvars\.filekey="([^"]+)";').search(page).group(1).replace('.', '%2E')
+   file = Regex('flashvars\.file="([^"]+)";').search(page).group(1)
+
+   data = HTTP.Request('http://%s/api/player.api.php?key=%s&file=%s' % (host, filekey, file)).content
+   video_url = data.split('url=')[1].split('&')[0]
+   Log.Debug('* PlayVideo URL = %s' %video_url)
+
+   return IndirectResponse(VideoClipObject, key=video_url)
