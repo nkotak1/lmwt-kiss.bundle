@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+
+"""Vidzi.tv Service Code"""
+
+from unpacker import unpack as Unpack
+
+####################################################################################################
+def NormalizeURL(url):
+
+    if '/embed-' in url:
+        url = url.replace('/embed-', '/')
+        url = url.split('-')[0]
+
+    return url
+
+####################################################################################################
+def MetadataObjectForURL(url):
+
+    # Trick to use the bundled Vidzi URL Service
+    url = url.replace('vidzi://', 'http://')
+
+    try:
+        html = HTML.ElementFromURL(url)
+    except:
+        raise Ex.MediaNotAvailable
+
+    if len(html.xpath('//*[contains(., "deleted")]')) > 0:
+        raise Ex.MediaNotAvailable
+
+    title = html.xpath('//h2[@class="video-title"]/text()')
+
+    if len(title) < 1:
+        raise Ex.MediaNotAvailable
+
+    title = title[0].strip()
+    thumb = html.xpath('//span[@id="vplayer"]/img/@src')[0]
+
+    return VideoClipObject(
+        title = title,
+        thumb = thumb
+    )
+
+####################################################################################################
+def MediaObjectsForURL(url):
+
+    return [
+        MediaObject(
+            video_resolution='sd',
+            audio_channels=2,
+            optimized_for_streaming=False,
+            parts=[
+                PartObject(key=Callback(PlayVideo, url=url))
+                ]
+            )
+        ]
+
+####################################################################################################
+@indirect
+def PlayVideo(url, **kwargs):
+
+    # Trick to use the bundled Vidzi ULR Service
+    url = url.replace('vidzi://', 'http://')
+
+    page = HTTP.Request(url).content
+    data = Regex("<script type=.text\/javascript.>(eval\(function\(p,a,c,k,e,.+\.split\('\|'\)\)\))").search(page)
+
+    if data:
+        data = Unpack(data.group(1))
+        file = Regex('file:"([^"]+\.mp4)"').search(data)
+        if file:
+            return IndirectResponse(VideoClipObject, key=file.group(1))
+
+    raise Ex.MediaNotAvailable
